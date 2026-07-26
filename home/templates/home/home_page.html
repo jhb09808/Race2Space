@@ -38,10 +38,10 @@
 
 <!-- ============ STAT STRIP ============ -->
 <section class="stat-strip">
-    <div class="stat"><div class="n mono">{{ num_agencies }}</div><div class="l">Nations profiled</div></div>
-    <div class="stat"><div class="n mono">{{ num_objects }}</div><div class="l">Objects launched</div></div>
-    <div class="stat"><div class="n mono">3</div><div class="l">Continents</div></div>
-    <div class="stat"><div class="n mono">1</div><div class="l">Shared frontier</div></div>
+    <div class="stat"><div class="n mono" data-count="{{ num_agencies }}">0</div><div class="l">Nations profiled</div></div>
+    <div class="stat"><div class="n mono" data-count="{{ num_objects }}">0</div><div class="l">Objects launched</div></div>
+    <div class="stat"><div class="n mono" data-count="3">0</div><div class="l">Continents</div></div>
+    <div class="stat"><div class="n mono" data-count="1">0</div><div class="l">Shared frontier</div></div>
 </section>
 
 <!-- ============ NATIONS RAIL ============ -->
@@ -83,8 +83,14 @@
     <div id="spaceObjectsGraph" class="graph-panel panel">
         <p class="eyebrow">Data · UNOOSA</p>
         <h3>Number of objects launched into space by country</h3>
-        <div class="graph-img">
-            <img src="data:image/png;base64,{{ graphic_space_objects }}" alt="Number of objects launched into space by country" class="img-fluid">
+        <div class="bars">
+            {% for row in objects_data %}
+            <div class="bar-row">
+                <span class="bar-name">{{ row.country }}</span>
+                <span class="bar-track"><span class="bar-fill" style="--w: {{ row.pct }}%; background: {{ row.color }};"></span></span>
+                <span class="bar-val mono" data-count="{{ row.value }}">0</span>
+            </div>
+            {% endfor %}
         </div>
         <div class="analysis">
             <h4>Leading nations</h4>
@@ -110,8 +116,14 @@
     <div id="govSpendingGraph" class="graph-panel panel" style="display: none;">
         <p class="eyebrow">Data · 2024 estimates</p>
         <h3>Government spending on space programs (USD)</h3>
-        <div class="graph-img">
-            <img src="data:image/png;base64,{{ graphic_gov_spending }}" alt="Government spending on space programs in USD" class="img-fluid">
+        <div class="bars">
+            {% for row in spending_data %}
+            <div class="bar-row">
+                <span class="bar-name">{{ row.country }}</span>
+                <span class="bar-track"><span class="bar-fill" style="--w: {{ row.pct }}%; background: {{ row.color }};"></span></span>
+                <span class="bar-val mono" data-count="{{ row.millions }}" data-prefix="$" data-suffix="M">0</span>
+            </div>
+            {% endfor %}
         </div>
         <div class="analysis">
             <h4>Investment leaders</h4>
@@ -198,8 +210,15 @@
     .data-block { margin-bottom: 3rem; }
     .data-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
     .graph-panel { padding: clamp(1.3rem, 3vw, 2rem); }
-    .graph-img { text-align: center; margin: 1.2rem 0; }
-    .graph-img img { border-radius: 12px; border: 1px solid var(--line); background: #fff; max-width: 100%; height: auto; }
+    .bars { display: flex; flex-direction: column; gap: 0.7rem; margin: 1.4rem 0 1.6rem; }
+    .bar-row { display: grid; grid-template-columns: 120px 1fr 70px; align-items: center; gap: 0.8rem; }
+    .bar-name { color: var(--text-soft); font-size: 0.9rem; }
+    .bar-track { height: 14px; background: color-mix(in srgb, var(--line) 65%, transparent); border-radius: 100px; overflow: hidden; }
+    .bar-fill { display: block; height: 100%; width: 0; border-radius: 100px; transition: width 1.1s cubic-bezier(.22,.61,.36,1); }
+    .bars.animate .bar-fill { width: var(--w); }
+    .bar-val { text-align: right; font-weight: 600; color: var(--text); }
+    @media (max-width: 520px) { .bar-row { grid-template-columns: 82px 1fr 58px; gap: 0.5rem; } .bar-name { font-size: 0.78rem; } .bar-val { font-size: 0.85rem; } }
+    @media (prefers-reduced-motion: reduce) { .bar-fill { transition: none; } }
     .analysis h4 { color: var(--accent); margin-top: 1.2rem; }
     .analysis h5 { color: var(--text); font-size: 1rem; margin-top: 0.8rem; }
     .analysis ul { margin: 0.3rem 0 0.6rem 1.1rem; color: var(--text-soft); }
@@ -220,10 +239,62 @@
 </style>
 
 <script>
-    document.getElementById('graphFilter').addEventListener('change', function () {
-        var space = this.value === 'spaceObjects';
-        document.getElementById('spaceObjectsGraph').style.display = space ? 'block' : 'none';
-        document.getElementById('govSpendingGraph').style.display = space ? 'none' : 'block';
-    });
+    (function () {
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ---- Count-up animation for a single number element ----
+        function countUp(el) {
+            if (el.dataset.done) return;
+            el.dataset.done = '1';
+            var target = parseFloat(el.getAttribute('data-count'));
+            if (isNaN(target)) return;
+            var prefix = el.getAttribute('data-prefix') || '';
+            var suffix = el.getAttribute('data-suffix') || '';
+            var fmt = function (n) { return Math.round(n).toLocaleString(); };
+            if (reduce) { el.textContent = prefix + fmt(target) + suffix; return; }
+            var dur = 1200, start = null;
+            function step(ts) {
+                if (!start) start = ts;
+                var p = Math.min((ts - start) / dur, 1);
+                var eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = prefix + fmt(target * eased) + suffix;
+                if (p < 1) requestAnimationFrame(step);
+                else el.textContent = prefix + fmt(target) + suffix;
+            }
+            requestAnimationFrame(step);
+        }
+
+        // ---- Animate a container: grow bars + count its numbers ----
+        function animate(container) {
+            container.querySelectorAll('[data-count]').forEach(countUp);
+            container.querySelectorAll('.bars').forEach(function (b) { b.classList.add('animate'); });
+        }
+
+        // ---- Trigger on scroll into view ----
+        var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) { animate(e.target); io.unobserve(e.target); }
+            });
+        }, { threshold: 0.25 }) : null;
+
+        function watch(el) {
+            if (!el) return;
+            if (io) io.observe(el); else animate(el);
+        }
+        watch(document.querySelector('.stat-strip'));
+        watch(document.getElementById('spaceObjectsGraph'));
+
+        // ---- Chart switcher (also animates the panel when first shown) ----
+        var filter = document.getElementById('graphFilter');
+        if (filter) {
+            filter.addEventListener('change', function () {
+                var space = this.value === 'spaceObjects';
+                document.getElementById('spaceObjectsGraph').style.display = space ? 'block' : 'none';
+                var gov = document.getElementById('govSpendingGraph');
+                gov.style.display = space ? 'none' : 'block';
+                if (!space) animate(gov);
+            });
+        }
+    })();
 </script>
 {% endblock %}

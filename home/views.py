@@ -32,35 +32,62 @@ def create_graph(data, title, xlabel, ylabel, yformat):
 
 
 
+def _bar_color(rank):
+    # Tiered accent colours for the horizontal bar charts.
+    if rank < 2:
+        return 'var(--accent)'
+    if rank < 4:
+        return 'var(--terra)'
+    return 'var(--teal)'
+
+
 def home_page(request):
-    # Space Objects Data
-    space_data = SpaceObject.objects.values('state_organization').annotate(Objects_Launched=Count('id')).order_by('state_organization')
-    space_df = pd.DataFrame(list(space_data))
-    graphic_space_objects = create_graph(space_df, 'Number of Objects Launched into Space by Country', 'Country', 'Number of Objects Launched', None)
+    from collections import defaultdict
 
-    # Government Spending Data
-    gov_spending_data = AgencyProfile.objects.exclude(annual_government_spending__isnull=True).values('country_name', 'annual_government_spending').order_by('country_name')
-    gov_spending_df = pd.DataFrame(list(gov_spending_data))
+    # --- Objects launched, aggregated by country (merges stray 'Brazil,' etc.) ---
+    raw = SpaceObject.objects.values('state_organization').annotate(c=Count('id'))
+    tally = defaultdict(int)
+    for row in raw:
+        name = (row['state_organization'] or '').strip().rstrip(',').strip()
+        if name:
+            tally[name] += row['c']
+    ranked = sorted(tally.items(), key=lambda kv: kv[1], reverse=True)[:10]
+    max_obj = ranked[0][1] if ranked else 1
+    objects_data = [
+        {
+            'country': name,
+            'value': count,
+            'pct': round(count * 100 / max_obj, 1),
+            'color': _bar_color(i),
+        }
+        for i, (name, count) in enumerate(ranked)
+    ]
 
-    # Define a custom formatter function for the y-axis
-    def currency(x, pos):
-        return f'${x:,.0f}'
+    # --- Government spending (top spenders, in millions USD) ---
+    spenders = (AgencyProfile.objects
+                .exclude(annual_government_spending__isnull=True)
+                .exclude(annual_government_spending=0)
+                .order_by('-annual_government_spending')[:10])
+    max_spend = spenders[0].annual_government_spending if spenders else 1
+    spending_data = [
+        {
+            'country': a.country_name,
+            'millions': round(a.annual_government_spending / 1_000_000),
+            'pct': round(a.annual_government_spending * 100 / max_spend, 1),
+            'color': _bar_color(i),
+        }
+        for i, a in enumerate(spenders)
+    ]
 
-    yformat = FuncFormatter(currency)
-
-    graphic_gov_spending = create_graph(gov_spending_df, 'Government Spending on Space Programs', 'Country', 'Spending Amount (USD)', yformat)
-
-    # Data for the redesigned homepage (nations rail + stat strip)
+    # --- Nations rail + stat strip ---
     agencies = AgencyProfile.objects.all().order_by('country_name')
-    num_agencies = agencies.count()
-    num_objects = SpaceObject.objects.count()
 
     return render(request, 'home/home_page.html', {
-        'graphic_space_objects': graphic_space_objects,
-        'graphic_gov_spending': graphic_gov_spending,
+        'objects_data': objects_data,
+        'spending_data': spending_data,
         'agencies': agencies,
-        'num_agencies': num_agencies,
-        'num_objects': num_objects,
+        'num_agencies': agencies.count(),
+        'num_objects': SpaceObject.objects.count(),
     })
 
 def agency_list(request):
