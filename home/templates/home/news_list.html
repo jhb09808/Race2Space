@@ -1,71 +1,37 @@
 {% extends 'home/base.html' %}
 {% load static %}
 
-{% block title %}Latest News{% endblock %}
+{% block title %}Latest News — Race2Space{% endblock %}
 
 {% block content %}
-<h1 class="text-center my-4">Latest News in Space and Astronomy</h1>
-<div class="container">
-    <div class="row">
-        {% for article in news_articles %}
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">{{ article.title }}</h5>
-                    <p class="card-text">{{ article.summary }}</p>
-                    <a href="{{ article.link }}" target="_blank" class="btn btn-primary">Read more</a>
-                </div>
-            </div>
+<div class="news-intro">
+    <p class="eyebrow">Updates</p>
+    <h1 class="section-title">Latest News in Space &amp; Astronomy</h1>
+</div>
+
+<div class="news-grid">
+    {% for article in news_articles %}
+    <article class="card news-card">
+        <div class="card-body">
+            <p class="news-date mono">{{ article.published_date|date:"Y·m·d" }}</p>
+            <h5 class="card-title">{{ article.title }}</h5>
+            <p class="news-summary">{{ article.summary }}</p>
+            <a href="{{ article.link }}" target="_blank" rel="noopener" class="btn btn-primary">Read more</a>
         </div>
-        {% endfor %}
-    </div>
+    </article>
+    {% empty %}
+    <p class="text-muted">No news articles yet — check back soon.</p>
+    {% endfor %}
 </div>
 
 <style>
-    .container {
-        background: rgba(255, 255, 255, 0.6);
-        padding: 20px;
-        border-radius: 10px;
-        color: black;
-    }
-
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    .card { background: linear-gradient(90deg, rgba(0,36,61,1) 0%, rgba(0,103,155,1) 50%, rgba(0,36,61,1) 100%);
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease-in-out;
-    color: white; }
-
-    .card:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .card-body {
-        padding: 20px;
-    }
-
-    .card-title {
-        margin-top: 0;
-    }
-
-    .card-text {
-        font-size: 1rem;
-    }
-
-    .btn-primary {
-        padding: 10px 15px;
-        border-radius: 5px;
-        font-weight: bold;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
+    .news-intro { margin-bottom: 2rem; }
+    .news-intro .eyebrow { display: block; margin-bottom: 0.5rem; }
+    .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.3rem; }
+    .news-card { display: flex; }
+    .news-card .card-body { display: flex; flex-direction: column; gap: 0.4rem; }
+    .news-date { font-size: 0.75rem; color: var(--accent); letter-spacing: 0.06em; }
+    .news-summary { color: var(--text-soft); flex: 1; }
+    .news-card .btn { align-self: flex-start; margin-top: 0.4rem; }
 </style>
 {% endblock %}

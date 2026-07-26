@@ -1,16 +1,36 @@
 {% extends 'home/base.html' %}
+{% load static %}
 
-{% block title %}Missions{% endblock %}
+{% block title %}Missions — Race2Space{% endblock %}
 
 {% block content %}
-<h1>Latest Space Missions</h1>
-<div class="missions-container">
+<div class="missions-intro">
+    <p class="eyebrow">Around the world</p>
+    <h1 class="section-title">Latest Space Missions</h1>
+</div>
+
+<div class="missions-grid">
     {% for mission in missions %}
-    <div class="mission-article">
-        <h3>{{ mission.title }}</h3>
-        <p>{{ mission.summary }}</p>
-        <a href="{{ mission.link }}" target="_blank">Read more</a>
-    </div>
+    <article class="card mission-card">
+        <div class="card-body">
+            {% if mission.date %}<p class="mission-date mono">{{ mission.date|date:"Y·m·d" }}</p>{% endif %}
+            <h3 class="card-title">{{ mission.title }}</h3>
+            <p class="mission-summary">{{ mission.summary }}</p>
+            <a href="{{ mission.link }}" target="_blank" rel="noopener" class="btn btn-outline">Read more</a>
+        </div>
+    </article>
+    {% empty %}
+    <p class="text-muted">No missions recorded yet.</p>
     {% endfor %}
 </div>
+
+<style>
+    .missions-intro { margin-bottom: 2rem; }
+    .missions-intro .eyebrow { display: block; margin-bottom: 0.5rem; }
+    .missions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.3rem; }
+    .mission-card .card-body { display: flex; flex-direction: column; gap: 0.5rem; }
+    .mission-date { font-size: 0.75rem; color: var(--accent); }
+    .mission-summary { color: var(--text-soft); flex: 1; }
+    .mission-card .btn { align-self: flex-start; }
+</style>
 {% endblock %}

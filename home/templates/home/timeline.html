@@ -1,170 +1,72 @@
 {% extends 'home/base.html' %}
 {% load static %}
 
-{% block title %}Space Exploration Timeline{% endblock %}
+{% block title %}Space Exploration Timeline — Race2Space{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
+<style>
+    .timeline-intro { max-width: 70ch; margin-bottom: 1.6rem; }
+    .timeline-intro .eyebrow { display: block; margin-bottom: 0.5rem; }
+    .timeline-intro p { color: var(--text-soft); }
+
+    .timeline-wrap { padding: 0.6rem; overflow: hidden; }
+    #timeline-embed {
+        height: 600px;
+        background-image: linear-gradient(rgba(16,23,40,0.35), rgba(16,23,40,0.35)), url("{% static 'home/timelinebg.jpg' %}");
+        background-size: cover; background-position: center; border-radius: 12px;
+    }
+
+    /* Legibility tweaks for TimelineJS markers */
+    .tl-timemarker-text {
+        transform: rotate(0deg) !important; white-space: normal !important;
+        max-width: 100px !important; min-width: 100px !important; width: 100px !important;
+    }
+    .tl-timemarker-content-container { width: auto !important; height: auto !important; }
+    .tl-timemarker { height: auto !important; }
+    .tl-timeaxis-tick-text { transform: rotate(0deg) !important; text-align: center !important; left: 0 !important; right: 0 !important; }
+    .tl-timeaxis-minor .tl-timeaxis-tick-text { font-size: 10px !important; }
+    .tl-timeaxis-major .tl-timeaxis-tick-text { font-size: 12px !important; font-weight: bold !important; }
+    .tl-timeaxis-tick { height: 50px !important; }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1 class="text-center text-dark">Historical Timeline</h1>
-<div class="container mt-2 timeline-container" style="max-width: 1300px;">
-    <div id="timeline-embed" class="timeline-background" style="height: 450px;"></div>
+<div class="timeline-intro">
+    <p class="eyebrow">History</p>
+    <h1 class="section-title">Space Exploration Timeline</h1>
+    <p>Key milestones in the space journeys of developing nations — scroll and navigate through the moments that shaped their path to orbit.</p>
 </div>
 
-<style>
-    .container {
-        background: rgba(255, 255, 255, 0.9);
-        padding: 20px;
-        border-radius: 10px;
-        color: black;
-    }
+<div class="timeline-wrap panel">
+    <div id="timeline-embed"></div>
+</div>
 
-    .text-center {
-        text-align: center;
-    }
-
-    .text-dark {
-        color: #343a40;
-    }
-
-    .timeline-container {
-        max-width: 1300px;
-        margin: 0 auto;
-    }
-
-    .timeline-background {
-        background-image: url('https://race2space.pythonanywhere.com/static/home/timelinebg.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        border-radius: 10px;
-        padding: 10px;
-    }
-
-    #timeline-embed .tl-text-content .tl-media {
-        float: right;
-        max-width: 300px;
-        margin-left: 20px;
-    }
-
-    #timeline-embed .tl-text-content p a {
-        display: inline-block;
-        padding: 10px 15px;
-        margin-top: 10px;
-        background-color: #007bff;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-    }
-
-    #timeline-embed .tl-text-content p a:hover {
-        background-color: #0056b3;
-    }
-
-    #timeline-embed .tl-media img {
-        max-width: 100%;
-        height: auto;
-    }
-
-    /* Fix for vertical dates */
-    .tl-timemarker-text {
-        transform: rotate(0deg) !important;
-        white-space: normal !important;
-        max-width: 100px !important;
-        min-width: 100px !important;
-        width: 100px !important;
-    }
-
-    .tl-timemarker-content-container {
-        width: auto !important;
-        height: auto !important;
-    }
-
-    .tl-timemarker {
-        height: auto !important;
-    }
-
-    .tl-timeaxis-tick-text {
-        transform: rotate(0deg) !important;
-        text-align: center !important;
-        left: 0 !important;
-        right: 0 !important;
-    }
-
-    .tl-timeaxis-minor .tl-timeaxis-tick-text {
-        font-size: 10px !important;
-    }
-
-    .tl-timeaxis-major .tl-timeaxis-tick-text {
-        font-size: 12px !important;
-        font-weight: bold !important;
-    }
-
-    .tl-timeaxis-tick {
-        height: 50px !important;
-    }
-</style>
-
-<!-- Include TimelineJS CSS from CDN -->
-<link rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
-
-<!-- Include TimelineJS JavaScript from CDN -->
 <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
-
 <script>
     var timeline_json = {
         "events": [
             {% for event in events %}
             {
-                "start_date": {
-                    "year": {{ event.date.year }},
-                    "month": {{ event.date.month }},
-                    "day": {{ event.date.day }}
-                },
+                "start_date": { "year": {{ event.date.year }}, "month": {{ event.date.month }}, "day": {{ event.date.day }} },
                 "text": {
-                    "headline": "{{ event.title }}",
-                    "text": `{{ event.description }}<br><a href="{{ event.link }}" class="btn btn-primary mt-2">Learn More</a>`
+                    "headline": "{{ event.title|escapejs }}",
+                    "text": "{{ event.description|escapejs }}{% if event.link %}<br><a href='{{ event.link }}' class='btn btn-primary mt-2' target='_blank' rel='noopener'>Learn More</a>{% endif %}"
                 },
-                "media": {
-                    "url": "{{ event.media_url }}",
-                    "caption": "{{ event.media_caption }}"
-                }
+                "media": { "url": "{{ event.media_url|escapejs }}", "caption": "{{ event.media_caption|escapejs }}" }
             }{% if not forloop.last %},{% endif %}
             {% endfor %}
         ]
     };
 
     var options = {
-        initial_zoom: 2,
-        timenav_position: 'bottom',
-        marker_height_min: 30,
-        marker_width_min: 100,
-        marker_padding: 5,
-        nav: {
-            previous: '<i class="fa fa-arrow-left" aria-hidden="true"></i>',
-            next: '<i class="fa fa-arrow-right" aria-hidden="true"></i>'
-        },
-        timenav_height_min: 150,
-        height: 450
+        initial_zoom: 2, timenav_position: 'bottom',
+        marker_height_min: 30, marker_width_min: 100, marker_padding: 5,
+        timenav_height_min: 150, height: 600
     };
 
-    document.addEventListener('DOMContentLoaded', function() {
-        var timeline = new TL.Timeline('timeline-embed', timeline_json, options);
-
-        // Debug: Display the image URL
-        var debugElement = document.getElementById('debug-image-url');
-        var computedStyle = window.getComputedStyle(document.querySelector('.timeline-background'));
-        var backgroundImage = computedStyle.getPropertyValue('background-image');
-        debugElement.textContent = 'Background Image URL: ' + backgroundImage;
-        debugElement.style.display = 'block';
-
-        // Attempt to preload the image
-        var img = new Image();
-        img.onload = function() {
-            console.log('Image loaded successfully');
-        };
-        img.onerror = function() {
-            console.error('Error loading image');
-        };
-        img.src = "{% static 'home/timelinebg.jpg' %}";
+    document.addEventListener('DOMContentLoaded', function () {
+        new TL.Timeline('timeline-embed', timeline_json, options);
     });
 </script>
 {% endblock %}

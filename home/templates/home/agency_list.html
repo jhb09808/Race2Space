@@ -1,52 +1,46 @@
- <!-- agency_list.html -->
 {% extends 'home/base.html' %}
+{% load static %}
 
-{% block title %}Agency Profiles - Race2Space{% endblock %}
-
-{% block extra_styles %}
-<style>
-    .profile-tile {
-        display: inline-block;
-        margin: 10px;
-        padding: 20px;
-        text-align: center;
-        width: 18%;
-        height: 250px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.7); /* White background with 70% opacity */
-        overflow: hidden;
-    }
-    .profile-tile img {
-        width: 150px;
-        height: 90px; /* Standardize flag size */
-        margin-bottom: 20px;
-    }
-    .title-white {
-        color: white;
-    }
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-</style>
-{% endblock %}
+{% block title %}Agency Profiles — Race2Space{% endblock %}
 
 {% block content %}
-<div class="container mt-1">
-    <h1 class="text-center title-white">Agency Profiles</h1>
-    <p>The countries listed below are recognized as developing by the United Nations. Race2Space is focused on supporting and showcasing the efforts of their space agencies, which are members of The United Nations Office for Outer Space Affairs (UNOOSA). We believe in the transformative power of space exploration and technology to drive sustainable development and improve the quality of life in these nations.</p>
-    <div class="row">
-        {% for profile in profiles|dictsort:"country_name" %}
-            <div class="profile-tile">
-                <a href="{% url 'agency_detail' profile.pk %}">
-                    <img src="{{ profile.flag.url }}" alt="{{ profile.country_name }} flag">
-                    <h5>{{ profile.country_name }}</h5>
-                    <p>{{ profile.agency_name }}</p>
-                </a>
-            </div>
-        {% endfor %}
-    </div>
+<div class="agencies-intro">
+    <p class="eyebrow">Country profiles</p>
+    <h1 class="section-title">Space Agencies</h1>
+    <p>The countries below are recognised as developing by the United Nations. Race2Space showcases their space agencies — members of the UN Office for Outer Space Affairs (UNOOSA) — and the transformative power of space technology to drive sustainable development.</p>
 </div>
+
+<div class="agency-grid">
+    {% for profile in profiles|dictsort:"country_name" %}
+    <a class="agency-card card" href="{% url 'agency_detail' profile.pk %}">
+        <div class="agency-flag">
+            <img src="{{ profile.flag.url }}" alt="{{ profile.country_name }} flag">
+        </div>
+        <div class="agency-info">
+            <h5>{{ profile.country_name }}</h5>
+            <p>{{ profile.agency_name }}</p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+<style>
+    .agencies-intro { max-width: 68ch; margin-bottom: 2.2rem; }
+    .agencies-intro .eyebrow { display: block; margin-bottom: 0.6rem; }
+    .agencies-intro p { color: var(--text-soft); }
+
+    .agency-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.2rem;
+    }
+    .agency-card { display: flex; flex-direction: column; text-decoration: none; color: var(--text) !important; }
+    .agency-flag {
+        aspect-ratio: 3 / 2; overflow: hidden; background: var(--ground-2);
+        border-bottom: 1px solid var(--line);
+    }
+    .agency-flag img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+    .agency-card:hover .agency-flag img { transform: scale(1.06); }
+    .agency-info { padding: 1rem 1.2rem 1.2rem; }
+    .agency-info h5 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 0.15rem; }
+    .agency-info p { color: var(--text-soft); font-size: 0.85rem; margin: 0; }
+</style>
 {% endblock %}

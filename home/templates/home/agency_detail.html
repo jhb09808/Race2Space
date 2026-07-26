@@ -1,54 +1,68 @@
 {% extends 'home/base.html' %}
 {% load static %}
 
-{% block title %}{{ profile.country_name }} - {{ profile.agency_name }}{% endblock %}
+{% block title %}{{ profile.country_name }} — {{ profile.agency_name }}{% endblock %}
 
 {% block content %}
-<div class="container mt-2">
-    <h1 class="text-center">{{ profile.agency_name }}</h1>
-    <h2 class="text-center">{{ profile.country_name }}</h2>
-    <hr>
-    <h3>Overview</h3>
-    <p>{{ profile.overview }}</p>
-    <h3>History</h3>
-    <p>{{ profile.history }}</p>
-    <h3>Notable Missions</h3>
-    <p>{{ profile.notable_missions }}</p>
-    <h3>Technological Innovations</h3>
-    <p>{{ profile.technological_innovations }}</p>
-    <h3>Collaborations</h3>
-    <p>{{ profile.collaborations }}</p>
-    <h3>Future Plans</h3>
-    <p>{{ profile.future_plans }}</p>
+<article class="agency-detail">
+    <header class="detail-head">
+        <div class="detail-flag">
+            <img src="{{ profile.flag.url }}" alt="{{ profile.country_name }} flag">
+        </div>
+        <div>
+            <p class="eyebrow">{{ profile.country_name }}</p>
+            <h1>{{ profile.agency_name }}</h1>
+        </div>
+    </header>
 
-    <h3>Space Objects</h3>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Name of Space Object</th>
-                <th>Date of Launch</th>
-                <th>Status</th>
-                <th>Function</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for obj in space_objects %}
-                <tr>
-                    <td>{{ obj.name_of_space_object }}</td>
-                    <td>{{ obj.date_of_launch }}</td>
-                    <td>{{ obj.status }}</td>
-                    <td>{{ obj.function_of_space_object }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="text-center mt-4">
-        <a class="btn btn-primary" href="{% url 'agency_list' %}">Go Back to Agency List</a>
+    <div class="detail-body">
+        <section><h3 class="section-title">Overview</h3><p>{{ profile.overview }}</p></section>
+        <section><h3 class="section-title">History</h3><p>{{ profile.history }}</p></section>
+        <section><h3 class="section-title">Notable Missions</h3><p>{{ profile.notable_missions }}</p></section>
+        <section><h3 class="section-title">Technological Innovations</h3><p>{{ profile.technological_innovations }}</p></section>
+        <section><h3 class="section-title">Collaborations</h3><p>{{ profile.collaborations }}</p></section>
+        <section><h3 class="section-title">Future Plans</h3><p>{{ profile.future_plans }}</p></section>
     </div>
-</div>
-{% endblock %}
 
-{% block extra_scripts %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <section class="objects-section">
+        <h3 class="section-title">Space Objects</h3>
+        <div class="table-wrap">
+            <table class="table table-striped">
+                <thead>
+                    <tr><th>Name</th><th>Date of Launch</th><th>Status</th><th>Function</th></tr>
+                </thead>
+                <tbody>
+                    {% for obj in space_objects %}
+                    <tr>
+                        <td>{{ obj.name_of_space_object }}</td>
+                        <td class="mono">{{ obj.date_of_launch|default:"—" }}</td>
+                        <td>{{ obj.status|default:"—" }}</td>
+                        <td>{{ obj.function_of_space_object|default:"—" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-muted">No registered space objects on record.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="detail-actions">
+        <a class="btn btn-outline" href="{% url 'agency_list' %}">← Back to all agencies</a>
+    </div>
+</article>
+
+<style>
+    .agency-detail { max-width: 900px; margin: 0 auto; }
+    .detail-head { display: flex; align-items: center; gap: 1.3rem; margin-bottom: 2rem; }
+    .detail-flag { width: 120px; flex: 0 0 auto; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 8px 20px -12px rgba(0,0,0,.5); }
+    .detail-flag img { width: 100%; height: auto; display: block; }
+    .detail-head h1 { margin: 0; }
+    .detail-body section { margin-bottom: 1.8rem; }
+    .detail-body p { color: var(--text-soft); }
+    .objects-section { margin-top: 2.5rem; }
+    .table-wrap { overflow-x: auto; }
+    .detail-actions { margin-top: 2.5rem; }
+    @media (max-width: 600px) { .detail-head { flex-direction: column; text-align: center; } .detail-flag { width: 100px; } }
+</style>
 {% endblock %}

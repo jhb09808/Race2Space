@@ -1,24 +1,39 @@
 {% extends 'home/base.html' %}
 
-{% block title %}Community Forum{% endblock %}
+{% block title %}Community Forum — Race2Space{% endblock %}
 
 {% block content %}
-<div class="jumbotron text-center">
+<div class="jumbotron">
+    <p class="eyebrow">Community</p>
     <h1 class="display-4">Community Forum</h1>
-    <p class="lead">Join the discussion! Share your thoughts and engage with other members of the community.</p>
-    <a class="btn btn-primary btn-lg" href="{% url 'start_discussion' %}" role="button">Start a New Discussion</a>
+    <p class="lead">Join the discussion — share your thoughts and connect with others following the Global South's journey into space.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'start_discussion' %}" role="button">Start a new discussion</a>
 </div>
-<div class="container mt-5 chat-box">
-    <h2>Current Discussions</h2>
-    <ul class="list-unstyled">
-        {% for discussion in discussions %}
-        <li class="media mb-3">
-            <div class="media-body">
-                <h5 class="mt-0 mb-1"><a href="{% url 'discussion_detail' discussion.id %}">{{ discussion.subject }}</a></h5>
-                <p>Started by {{ discussion.name }} on {{ discussion.created_at|date:"F j, Y" }}</p>
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+
+<section class="forum-list">
+    <h2 class="section-title">Current discussions</h2>
+    {% for discussion in discussions %}
+    <a class="thread panel" href="{% url 'discussion_detail' discussion.id %}">
+        <div class="thread-main">
+            <h5>{{ discussion.subject }}</h5>
+            <p class="thread-meta mono">by {{ discussion.name }} · {{ discussion.created_at|date:"M j, Y" }}</p>
+        </div>
+        <span class="thread-count mono">{{ discussion.replies.count }} {% if discussion.replies.count == 1 %}reply{% else %}replies{% endif %}</span>
+    </a>
+    {% empty %}
+    <p class="text-muted">No discussions yet — be the first to start one.</p>
+    {% endfor %}
+</section>
+
+<style>
+    .forum-list { max-width: 820px; margin: 0 auto; }
+    .thread {
+        display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+        padding: 1.1rem 1.4rem; margin-bottom: 0.9rem; text-decoration: none; color: var(--text) !important;
+    }
+    .thread-main h5 { font-family: var(--serif); font-size: 1.15rem; margin: 0 0 0.2rem; }
+    .thread-meta { font-size: 0.75rem; color: var(--text-soft); margin: 0; }
+    .thread-count { flex: 0 0 auto; font-size: 0.8rem; color: var(--teal); }
+    @media (max-width: 500px) { .thread { flex-direction: column; align-items: flex-start; } }
+</style>
 {% endblock %}

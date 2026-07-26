@@ -50,9 +50,17 @@ def home_page(request):
 
     graphic_gov_spending = create_graph(gov_spending_df, 'Government Spending on Space Programs', 'Country', 'Spending Amount (USD)', yformat)
 
+    # Data for the redesigned homepage (nations rail + stat strip)
+    agencies = AgencyProfile.objects.all().order_by('country_name')
+    num_agencies = agencies.count()
+    num_objects = SpaceObject.objects.count()
+
     return render(request, 'home/home_page.html', {
         'graphic_space_objects': graphic_space_objects,
         'graphic_gov_spending': graphic_gov_spending,
+        'agencies': agencies,
+        'num_agencies': num_agencies,
+        'num_objects': num_objects,
     })
 
 def agency_list(request):

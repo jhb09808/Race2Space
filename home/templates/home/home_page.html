@@ -1,183 +1,229 @@
 {% extends 'home/base.html' %}
 {% load static %}
 
-{% block title %}Race2Space{% endblock %}
+{% block title %}Race2Space — The Global South, in orbit{% endblock %}
 
 {% block content %}
-<div class="container mt-5 d-flex align-items-center">
-    <img src="{% static 'home/racespace.png' %}" alt="Space" class="img-fluid" style="max-width: 300px; margin-right: 20px;">
+
+<!-- ============ HERO ============ -->
+<section class="r2s-hero">
+    <div class="hero-copy">
+        <p class="eyebrow">{{ num_agencies }} nations · one frontier</p>
+        <h1>The Global South,<br><em>in orbit.</em></h1>
+        <p class="hero-lede">Race2Space celebrates how developing countries build satellites, run space agencies, and reach beyond the atmosphere — from launch sites near the equator to ground stations across three continents.</p>
+        <div class="hero-cta">
+            <a class="btn btn-primary" href="{% url 'agency_list' %}">Explore agencies</a>
+            <a class="btn btn-outline" href="{% url 'map_view' %}">View the map</a>
+        </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 400 400" role="img" aria-label="A launch trajectory arc rising toward a satellite">
+            <line x1="20" y1="360" x2="380" y2="360" stroke="var(--line)" stroke-width="2"/>
+            <g stroke="var(--line)" stroke-width="1.5">
+                <line x1="80" y1="360" x2="80" y2="372"/><line x1="170" y1="360" x2="170" y2="372"/>
+                <line x1="260" y1="360" x2="260" y2="372"/><line x1="350" y1="360" x2="350" y2="372"/>
+            </g>
+            <ellipse cx="200" cy="200" rx="150" ry="150" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 9"/>
+            <path class="traj-line traj-draw" d="M40 360 Q 120 60 330 120"/>
+            <circle cx="40" cy="360" r="5" fill="var(--terra)"/>
+            <g transform="translate(330 120)">
+                <circle r="8" fill="var(--accent)"/>
+                <circle r="15" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity="0.5"/>
+                <line x1="-26" y1="0" x2="-13" y2="0" stroke="var(--accent)" stroke-width="2"/>
+                <line x1="13" y1="0" x2="26" y2="0" stroke="var(--accent)" stroke-width="2"/>
+            </g>
+        </svg>
+    </div>
+</section>
+
+<!-- ============ STAT STRIP ============ -->
+<section class="stat-strip">
+    <div class="stat"><div class="n mono">{{ num_agencies }}</div><div class="l">Nations profiled</div></div>
+    <div class="stat"><div class="n mono">{{ num_objects }}</div><div class="l">Objects launched</div></div>
+    <div class="stat"><div class="n mono">3</div><div class="l">Continents</div></div>
+    <div class="stat"><div class="n mono">1</div><div class="l">Shared frontier</div></div>
+</section>
+
+<!-- ============ NATIONS RAIL ============ -->
+{% if agencies %}
+<section class="rail-section">
+    <p class="eyebrow">Featured nations</p>
+    <div class="country-rail">
+        {% for agency in agencies %}
+        <a class="flagchip" href="{% url 'agency_detail' agency.pk %}">
+            <img src="{{ agency.flag.url }}" alt="{{ agency.country_name }} flag">
+            <span>{{ agency.country_name }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- ============ ABOUT ============ -->
+<section class="about-block">
+    <img src="{% static 'home/racespace.png' %}" alt="Race2Space" class="about-logo">
     <div>
-        <p class="lead">At Race2Space, we celebrate the incredible contributions of developing countries in the field of space advancement and exploration. Our mission is to highlight the remarkable achievements, technological innovations, and collaborative efforts that have propelled these nations into the space frontier.</p>
-        <hr class="my-4">
-        <p>Over the years, space exploration has transformed from a race between superpowers to a global endeavor, with developing countries playing a pivotal role. From launching satellites to conducting groundbreaking research, these nations are making significant strides in harnessing space technology for the benefit of humanity.</p>
-        <p>Our focus includes the contributions of countries such as Algeria, Angola, Argentina, Azerbaijan, Bahrain, Brazil, China, Egypt, India, Indonesia, Iran, Kenya, Mexico, Pakistan, Peru, the Philippines, South Africa, Türkiye, Ukraine, Venezuela, and Zimbabwe. Explore the profiles to learn more about each country's unique journey and impact on space exploration.</p>
-        <p>To learn more about this project, click <a href="https://jeromebustarga.site/wordpress/final-project-race2space/" target="_blank">here</a>.</p>
+        <h2 class="section-title">Space is no longer a two-country race</h2>
+        <p>Over the past decades, space exploration has transformed from a contest between superpowers into a global endeavour. Developing nations now play a pivotal role — launching satellites, conducting research, and harnessing space technology for the benefit of their people.</p>
+        <p>Our focus includes Algeria, Angola, Argentina, Azerbaijan, Bahrain, Brazil, China, Egypt, India, Indonesia, Iran, Kenya, Mexico, Pakistan, Peru, the Philippines, South Africa, Türkiye, Ukraine, Venezuela, and Zimbabwe. Explore the profiles to learn each country's unique journey.</p>
+        <p><a href="https://jeromebustarga.site/wordpress/final-project-race2space/" target="_blank" rel="noopener">Learn more about this project →</a></p>
     </div>
-</div>
+</section>
 
-<!-- Embedded resources -->
-<div class="container mt-4">
-    <h2 class="text-center">WELCOME</h2>
-    <br>
-    <br>
-    <div class="row">
-        <div class="col-md-4">
-            <h4>ISS Tracker</h4>
-            <iframe src="https://www.orbtrack.org/#/?satName=ISS%20(ZARYA)" width="100%" height="400" frameborder="0"></iframe>
-        </div>
-        <div class="col-md-4">
-            <h4>UNCTAD Report on Space Technologies</h4>
-            <iframe src="https://docs.google.com/viewer?url=https://unctad.org/system/files/official-document/dtlstict2021d1_en.pdf&embedded=true" width="100%" height="400" frameborder="0"></iframe>
-        </div>
-        <div class="col-md-4">
-            <h4>Developing Countries in Space Industry</h4>
-            <script async src="https://static.medium.com/embed.js"></script><a class="m-story" href="https://medium.com/bombilya-blog/should-developing-countries-invest-in-space-technology-c2a3007df6f9">Should Developing Countries Invest In Space Technology?</a>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-12">
-        <h4>WNYC Studios On-Demand Player</h4>
-        <iframe frameborder="0" scrolling="no" height="130" width="100%" src="https://www.wnyc.org/widgets/ondemand_player/wnycstudios/#file=/audio/json/998877/&share=1"></iframe>
-    </div>
-</div>
-
-<div class="container mt-5">
-    <h2 class="text-center">Select Graph to View</h2>
-    <div class="text-center mb-4">
-        <select id="graphFilter" class="form-control" style="max-width: 300px; margin: 0 auto;">
-            <option value="spaceObjects">Space Objects</option>
-            <option value="govSpending">Government Spending</option>
+<!-- ============ DATA ============ -->
+<section class="data-block">
+    <div class="data-head">
+        <h2 class="section-title">By the numbers</h2>
+        <select id="graphFilter" class="form-select" style="max-width: 260px;">
+            <option value="spaceObjects">Objects launched</option>
+            <option value="govSpending">Government spending</option>
         </select>
     </div>
 
-    <div id="spaceObjectsGraph" class="graph-container">
-    <h2 class="text-center">Number of Objects Launched into Space by Country</h2>
-    <div class="text-center">
-        <img src="data:image/png;base64,{{ graphic_space_objects }}" alt="Number of Objects Launched into Space by Country" class="img-fluid rounded shadow-lg" style="border: 2px solid #333; max-width: 100%; height: auto;">
-    </div>
-    <div class="mt-4 explanation-text">
-        <h3>Data Analysis</h3>
-        <div class="card bg-dark text-white">
-            <div class="card-body">
-                <h4>Leading Nations</h4>
-                <p>Brazil leads developing nations with approximately 42 objects launched into space, followed by Türkiye with around 32 launches, demonstrating these countries' significant investments in their space capabilities.</p>
-
-                <h4>Regional Distribution</h4>
-                <h5>South America</h5>
-                <ul>
-                    <li>Brazil leads the continent</li>
-                    <li>Argentina has launched about 19 objects</li>
-                    <li>Peru and Venezuela show smaller but notable contributions</li>
-                </ul>
-
-                <h5>Asia</h5>
-                <ul>
-                    <li>Indonesia has launched approximately 23 objects</li>
-                    <li>Pakistan and Iran each have launched between 8-11 objects</li>
-                    <li>The Philippines has contributed about 9 launches</li>
-                </ul>
-
-                <h5>Africa</h5>
-                <ul>
-                    <li>Egypt leads with roughly 14 launches</li>
-                    <li>South Africa follows with 9 launches</li>
-                    <li>Algeria, Angola, Kenya, and Zimbabwe show emerging space capabilities</li>
-                </ul>
-
-                <h4>Emerging Programs</h4>
-                <p>Several countries show modest but significant progress in their space programs, with launches ranging from 1-5 objects, indicating their growing involvement in space activities. This reflects UNOOSA's mission to promote international cooperation in the peaceful uses of outer space, particularly supporting developing nations in building their space capabilities.</p>
-
-                <p class="mt-3"><em>Data source: United Nations Office for Outer Space Affairs (UNOOSA)</em></p>
+    <div id="spaceObjectsGraph" class="graph-panel panel">
+        <p class="eyebrow">Data · UNOOSA</p>
+        <h3>Number of objects launched into space by country</h3>
+        <div class="graph-img">
+            <img src="data:image/png;base64,{{ graphic_space_objects }}" alt="Number of objects launched into space by country" class="img-fluid">
+        </div>
+        <div class="analysis">
+            <h4>Leading nations</h4>
+            <p>Brazil leads developing nations with roughly 42 objects launched, followed by Türkiye with around 32 — a mark of sustained investment in their space capabilities.</p>
+            <div class="analysis-cols">
+                <div>
+                    <h5>South America</h5>
+                    <ul><li>Brazil leads the continent</li><li>Argentina has launched about 19 objects</li><li>Peru and Venezuela show smaller but notable contributions</li></ul>
+                </div>
+                <div>
+                    <h5>Asia</h5>
+                    <ul><li>Indonesia has launched approximately 23 objects</li><li>Pakistan and Iran each between 8–11 objects</li><li>The Philippines about 9 launches</li></ul>
+                </div>
+                <div>
+                    <h5>Africa</h5>
+                    <ul><li>Egypt leads with roughly 14 launches</li><li>South Africa follows with 9</li><li>Algeria, Angola, Kenya and Zimbabwe show emerging capabilities</li></ul>
+                </div>
             </div>
+            <p class="src mono">Source: United Nations Office for Outer Space Affairs (UNOOSA)</p>
         </div>
     </div>
-</div>
 
-
-    <div id="govSpendingGraph" class="graph-container" style="display: none;">
-    <h2 class="text-center">Government Spending on Space Programs (in USD)</h2>
-    <div class="text-center">
-        <img src="data:image/png;base64,{{ graphic_gov_spending }}" alt="Government Spending on Space Programs (in USD)" class="img-fluid rounded shadow-lg" style="border: 2px solid #333; max-width: 100%; height: auto;">
-    </div>
-    <div class="mt-4 explanation-text">
-        <h3>Data Analysis</h3>
-        <div class="card bg-dark text-white">
-            <div class="card-body">
-                <h4>Investment Leaders</h4>
-                <p>Azerbaijan and Indonesia lead with investments of approximately $220 million each in their space programs, showcasing their strong commitment to space capabilities development.</p>
-
-                <h4>Regional Investment Patterns</h4>
-                <h5>Asia</h5>
-                <ul>
-                    <li>The Philippines allocates around $150 million</li>
-                    <li>Pakistan invests approximately $45 million</li>
-                    <li>Iran maintains a budget of about $10 million</li>
-                </ul>
-
-                <h5>South America</h5>
-                <ul>
-                    <li>Argentina commits roughly $65 million</li>
-                    <li>Brazil invests approximately $20 million</li>
-                    <li>Venezuela maintains a smaller budget of about $10 million</li>
-                </ul>
-
-                <h5>Africa</h5>
-                <ul>
-                    <li>Algeria leads with nearly $100 million</li>
-                    <li>South Africa invests approximately $85 million</li>
-                    <li>Egypt allocates around $50 million</li>
-                    <li>Kenya, Zimbabwe, and Angola maintain smaller budgets under $30 million</li>
-                </ul>
-
-                <h4>Emerging Programs</h4>
-                <ul>
-                    <li>Türkiye has allocated approximately $50 million</li>
-                    <li>Ukraine maintains a budget of about $50 million</li>
-                    <li>Bahrain and Peru have more modest investments, ranging from $20-30 million</li>
-                </ul>
-
-                <h4>Investment Impact</h4>
-                <p>These financial commitments demonstrate varying levels of priority given to space programs across developing nations. While some countries like Azerbaijan and Indonesia are making substantial investments, others are taking a more measured approach, balancing space development with other national priorities. The spending patterns often correlate with each nation's broader technological and economic development goals.</p>
-
-                <p class="mt-3"><em>Note: Estimated figures for 2024, compiled from various government and industry sources.</em></p>
+    <div id="govSpendingGraph" class="graph-panel panel" style="display: none;">
+        <p class="eyebrow">Data · 2024 estimates</p>
+        <h3>Government spending on space programs (USD)</h3>
+        <div class="graph-img">
+            <img src="data:image/png;base64,{{ graphic_gov_spending }}" alt="Government spending on space programs in USD" class="img-fluid">
+        </div>
+        <div class="analysis">
+            <h4>Investment leaders</h4>
+            <p>Azerbaijan and Indonesia lead with roughly $220 million each, reflecting a strong commitment to building space capability.</p>
+            <div class="analysis-cols">
+                <div>
+                    <h5>Asia</h5>
+                    <ul><li>The Philippines allocates around $150M</li><li>Pakistan invests approximately $45M</li><li>Iran maintains a budget of about $10M</li></ul>
+                </div>
+                <div>
+                    <h5>South America</h5>
+                    <ul><li>Argentina commits roughly $65M</li><li>Brazil invests approximately $20M</li><li>Venezuela maintains about $10M</li></ul>
+                </div>
+                <div>
+                    <h5>Africa</h5>
+                    <ul><li>Algeria leads with nearly $100M</li><li>South Africa invests about $85M</li><li>Egypt allocates around $50M</li></ul>
+                </div>
             </div>
+            <p class="src mono">Estimated figures for 2024, compiled from government and industry sources.</p>
         </div>
     </div>
-</div>
+</section>
 
-</div>
+<!-- ============ LIVE EMBED ============ -->
+<section class="live-block">
+    <h2 class="section-title">Live from orbit</h2>
+    <div class="live-grid">
+        <div class="panel iss-panel">
+            <p class="eyebrow">Real-time</p>
+            <h3>ISS Tracker</h3>
+            <iframe src="https://www.orbtrack.org/#/?satName=ISS%20(ZARYA)" title="ISS Tracker" loading="lazy"></iframe>
+        </div>
+        <div class="resource-list">
+            <a class="panel resource" href="https://unctad.org/system/files/official-document/dtlstict2021d1_en.pdf" target="_blank" rel="noopener">
+                <p class="eyebrow">Report · UNCTAD</p>
+                <h4>Technology &amp; Innovation in space</h4>
+                <p>How space technologies support development goals. →</p>
+            </a>
+            <a class="panel resource" href="https://medium.com/bombilya-blog/should-developing-countries-invest-in-space-technology-c2a3007df6f9" target="_blank" rel="noopener">
+                <p class="eyebrow">Essay · Medium</p>
+                <h4>Should developing countries invest in space?</h4>
+                <p>A look at the case for space in emerging economies. →</p>
+            </a>
+        </div>
+    </div>
+</section>
 
-<script>
-    document.getElementById('graphFilter').addEventListener('change', function() {
-        var selectedValue = this.value;
-        document.getElementById('spaceObjectsGraph').style.display = selectedValue === 'spaceObjects' ? 'block' : 'none';
-        document.getElementById('govSpendingGraph').style.display = selectedValue === 'govSpending' ? 'block' : 'none';
-    });
-</script>
 <style>
-    .explanation-text {
-        max-width: 900px;
-        margin: 0 auto;
+    .r2s-hero {
+        display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(1.5rem, 4vw, 3rem);
+        align-items: center; padding: clamp(1.5rem, 5vw, 3.5rem) 0 clamp(1rem, 3vw, 2rem);
     }
-    .card.bg-dark {
-        background: rgba(33, 37, 41, 0.9) !important;
+    .r2s-hero h1 { font-size: clamp(2.6rem, 6.5vw, 5rem); }
+    .r2s-hero h1 em { font-style: italic; color: var(--terra); }
+    .hero-lede { font-size: clamp(1.05rem, 1.6vw, 1.25rem); color: var(--text-soft); max-width: 44ch; margin-top: 1.2rem; }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2rem; }
+    .hero-art svg { width: 100%; height: auto; overflow: visible; }
+    @media (max-width: 820px) { .r2s-hero { grid-template-columns: 1fr; } .hero-art { max-width: 340px; margin: 0 auto; } }
+
+    .stat-strip {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+        background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin: 1rem 0 2.5rem;
     }
-    .explanation-text h4 {
-        color: #00d1ff;
-        margin-top: 1rem;
+    .stat { background: var(--ground); padding: 1.3rem 1.1rem; }
+    .stat .n { font-weight: 600; font-size: clamp(1.6rem, 3.4vw, 2.4rem); letter-spacing: -0.02em; color: var(--accent); }
+    .stat .l { font-size: 0.82rem; color: var(--text-soft); }
+    @media (max-width: 620px) { .stat-strip { grid-template-columns: repeat(2, 1fr); } }
+
+    .rail-section { margin-bottom: 2.8rem; }
+    .rail-section .eyebrow { display: block; margin-bottom: 0.9rem; }
+    .country-rail { display: flex; gap: 0.6rem; overflow-x: auto; padding-bottom: 0.6rem; }
+    .flagchip {
+        flex: 0 0 auto; display: flex; align-items: center; gap: 0.55rem;
+        padding: 0.45rem 0.9rem 0.45rem 0.5rem; border: 1px solid var(--line); border-radius: 100px;
+        color: var(--text) !important; font-size: 0.88rem; white-space: nowrap; transition: border-color .2s, transform .2s;
     }
-    .explanation-text h5 {
-        color: #ffffff;
-        margin-top: 0.8rem;
-    }
-    .explanation-text ul {
-        margin-left: 1.5rem;
-    }
-    .explanation-text p {
-        line-height: 1.6;
-    }
+    .flagchip:hover { border-color: var(--accent); transform: translateY(-2px); color: var(--accent) !important; }
+    .flagchip img { width: 30px; height: 20px; border-radius: 3px; object-fit: cover; border: 1px solid var(--line); }
+
+    .about-block { display: grid; grid-template-columns: 200px 1fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; margin-bottom: 3rem; }
+    .about-logo { width: 100%; max-width: 200px; filter: drop-shadow(0 8px 24px rgba(0,0,0,.35)); }
+    @media (max-width: 720px) { .about-block { grid-template-columns: 1fr; text-align: center; } .about-logo { max-width: 150px; margin: 0 auto; } .section-title { display: inline-block; } }
+
+    .data-block { margin-bottom: 3rem; }
+    .data-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .graph-panel { padding: clamp(1.3rem, 3vw, 2rem); }
+    .graph-img { text-align: center; margin: 1.2rem 0; }
+    .graph-img img { border-radius: 12px; border: 1px solid var(--line); background: #fff; max-width: 100%; height: auto; }
+    .analysis h4 { color: var(--accent); margin-top: 1.2rem; }
+    .analysis h5 { color: var(--text); font-size: 1rem; margin-top: 0.8rem; }
+    .analysis ul { margin: 0.3rem 0 0.6rem 1.1rem; color: var(--text-soft); }
+    .analysis ul li { margin-bottom: 0.2rem; }
+    .analysis-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 0.5rem; }
+    @media (max-width: 720px) { .analysis-cols { grid-template-columns: 1fr; } }
+    .analysis .src { font-size: 0.75rem; color: var(--text-soft); margin-top: 1rem; }
+
+    .live-block { margin-bottom: 2rem; }
+    .live-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1.2rem; }
+    @media (max-width: 820px) { .live-grid { grid-template-columns: 1fr; } }
+    .iss-panel { padding: 1.4rem; }
+    .iss-panel iframe { width: 100%; height: 380px; border: 0; border-radius: 12px; margin-top: 0.8rem; background: #000; }
+    .resource-list { display: flex; flex-direction: column; gap: 1.2rem; }
+    .resource { padding: 1.3rem; display: block; color: var(--text) !important; }
+    .resource h4 { margin: 0.3rem 0; }
+    .resource p { color: var(--text-soft); margin: 0; font-size: 0.9rem; }
 </style>
 
+<script>
+    document.getElementById('graphFilter').addEventListener('change', function () {
+        var space = this.value === 'spaceObjects';
+        document.getElementById('spaceObjectsGraph').style.display = space ? 'block' : 'none';
+        document.getElementById('govSpendingGraph').style.display = space ? 'none' : 'block';
+    });
+</script>
 {% endblock %}

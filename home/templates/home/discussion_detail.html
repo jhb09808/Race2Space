@@ -1,40 +1,55 @@
 {% extends 'home/base.html' %}
 
-{% block title %}Discussion Detail{% endblock %}
+{% block title %}{{ discussion.subject }} — Race2Space{% endblock %}
 
 {% block content %}
-<div class="container mt-5 chat-box">
-    <div class="media mb-3">
-        <div class="media-body">
-            <h1 class="mt-0">{{ discussion.subject }}</h1>
-            <p>{{ discussion.message }}</p>
-            <p class="text-muted">Started by {{ discussion.name }} on {{ discussion.created_at|date:"F j, Y" }}</p>
-        </div>
-    </div>
-    <hr>
-    <h2>Replies</h2>
-    <ul class="list-unstyled mb-5">
+<div class="discussion">
+    <a href="{% url 'forum_home' %}" class="back-link mono">← Back to forum</a>
+
+    <article class="panel op-post">
+        <h1>{{ discussion.subject }}</h1>
+        <p class="post-meta mono">Started by {{ discussion.name }} · {{ discussion.created_at|date:"F j, Y" }}</p>
+        <p class="post-body">{{ discussion.message }}</p>
+    </article>
+
+    <section class="replies">
+        <h2 class="section-title">Replies</h2>
         {% for reply in discussion.replies.all %}
-        <li class="media mb-3">
-            <div class="media-body">
-                <p>{{ reply.message }}</p>
-                <p class="text-muted">Reply by {{ reply.name }} on {{ reply.created_at|date:"F j, Y" }}</p>
-            </div>
-        </li>
+        <div class="panel reply">
+            <p class="post-body">{{ reply.message }}</p>
+            <p class="post-meta mono">{{ reply.name }} · {{ reply.created_at|date:"F j, Y" }}</p>
+        </div>
+        {% empty %}
+        <p class="text-muted">No replies yet — start the conversation below.</p>
         {% endfor %}
-    </ul>
-    <h2>Post a Reply</h2>
-    <form action="{% url 'discussion_detail' discussion.id %}" method="post" class="chat-form">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="message">Message</label>
-            <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="name">Name (optional)</label>
-            <input type="text" class="form-control" id="name" name="name">
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    </section>
+
+    <section class="reply-form panel">
+        <h2 class="section-title">Post a reply</h2>
+        <form action="{% url 'discussion_detail' discussion.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="name">Name (optional)</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Anonymous">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit reply</button>
+        </form>
+    </section>
 </div>
+
+<style>
+    .discussion { max-width: 780px; margin: 0 auto; }
+    .back-link { display: inline-block; margin-bottom: 1.2rem; font-size: 0.8rem; }
+    .op-post { padding: 1.6rem; margin-bottom: 2rem; }
+    .op-post h1 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); }
+    .post-meta { font-size: 0.75rem; color: var(--text-soft); margin: 0.4rem 0 1rem; }
+    .post-body { color: var(--text); white-space: pre-wrap; }
+    .reply { padding: 1.2rem 1.4rem; margin-bottom: 0.9rem; }
+    .reply .post-meta { margin: 0.6rem 0 0; }
+    .reply-form { padding: 1.6rem; margin-top: 2rem; }
+</style>
 {% endblock %}

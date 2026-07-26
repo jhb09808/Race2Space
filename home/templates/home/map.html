@@ -1,52 +1,54 @@
 {% extends 'home/base.html' %}
 {% load static %}
 
-{% block title %}Space Agencies Map{% endblock %}
+{% block title %}Space Agencies Map — Race2Space{% endblock %}
 
 {% block content %}
-<div class="container mt-2" style="max-width: 1500px; padding-left: 10px; padding-right: 10px;">
-    <h1 class="display-4">Interactive Map of Space Agencies in Developing Countries</h1>
-
-
-    <div id="map" style="height: 600px;"></div>
+<div class="map-intro">
+    <p class="eyebrow">Interactive map</p>
+    <h1 class="section-title">Space Agencies of Developing Countries</h1>
+    <p>Each pin marks a space agency making significant strides despite economic and technological challenges. Explore agencies across Algeria, Angola, Argentina, Azerbaijan, Bahrain, Brazil, China, Egypt, India, Indonesia, Iran, Kenya, Mexico, Pakistan, Peru, the Philippines, South Africa, Türkiye, Ukraine, Venezuela, and Zimbabwe.</p>
 </div>
 
-<script>
-    // Initialize the map
-    var map = L.map('map').setView([20, 0], 2);
+<div class="map-frame panel">
+    <div id="map"></div>
+</div>
 
-    // Add OpenStreetMap tiles
+<style>
+    .map-intro { max-width: 70ch; margin-bottom: 1.6rem; }
+    .map-intro .eyebrow { display: block; margin-bottom: 0.5rem; }
+    .map-intro p { color: var(--text-soft); }
+    .map-frame { padding: 0.6rem; overflow: hidden; }
+    #map { height: 600px; width: 100%; border-radius: 12px; }
+    .leaflet-popup-content-wrapper { border-radius: 12px; }
+    .leaflet-popup-content { font-family: var(--sans); text-align: center; }
+    .leaflet-popup-content b { font-family: var(--serif); font-size: 1.05rem; }
+</style>
+
+<script>
+    var map = L.map('map').setView([20, 0], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Define the space agencies data
     var spaceAgencies = [
         {% for agency in agencies %}
         {
-            "name": "{{ agency.agency_name }}",
+            "name": "{{ agency.agency_name|escapejs }}",
             "lat": {{ agency.latitude }},
             "lng": {{ agency.longitude }},
             "flag": "{{ agency.flag.url }}",
             "profileUrl": "{% url 'agency_detail' agency.pk %}"
-        },
+        }{% if not forloop.last %},{% endif %}
         {% endfor %}
     ];
 
-    // Add markers to the map
-    spaceAgencies.forEach(function(agency) {
-        var popupContent = `
-            <b>${agency.name}</b><br>
-            <div style="text-align: center;">
-                <img src="${agency.flag}" alt="${agency.name} flag" style="width:100px; display: block; margin-left: auto; margin-right: auto;"><br>
-                <a class="btn btn-primary mt-2 text-white" href="${agency.profileUrl}" style="display: block; margin: 0 auto;">View Profile</a>
-            </div>
-        `;
-        L.marker([agency.lat, agency.lng]).addTo(map)
-            .bindPopup(popupContent);
+    spaceAgencies.forEach(function (agency) {
+        var popupContent =
+            '<b>' + agency.name + '</b><br>' +
+            '<img src="' + agency.flag + '" alt="' + agency.name + ' flag" style="width:110px;display:block;margin:8px auto;border-radius:4px;"><br>' +
+            '<a class="btn btn-primary" href="' + agency.profileUrl + '" style="display:inline-block;">View Profile</a>';
+        L.marker([agency.lat, agency.lng]).addTo(map).bindPopup(popupContent);
     });
 </script>
-<p>Welcome to our interactive map, showcasing the space agencies of developing countries around the world. This map is a visual representation of the remarkable contributions made by nations such as Algeria, Angola, Argentina, Azerbaijan, Bahrain, Brazil, China, Egypt, India, Indonesia, Iran, Kenya, Mexico, Pakistan, Peru, the Philippines, South Africa, Türkiye, Ukraine, Venezuela, and Zimbabwe.</p>
-
-<p>This map serves as a gateway to understanding the diverse and innovative efforts of these countries in the field of space exploration. Each pin on the map represents a space agency that has made significant strides despite economic and technological challenges. By exploring the profiles of these agencies, you can learn about their unique journeys, groundbreaking missions, and the impact they have had on global space exploration.</p>
 {% endblock %}
