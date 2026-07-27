@@ -90,6 +90,39 @@ def home_page(request):
         'num_objects': SpaceObject.objects.count(),
     })
 
+def dashboard(request):
+    from collections import defaultdict
+    from .space_data import WORLD_AGENCIES
+
+    agencies = sorted(WORLD_AGENCIES, key=lambda a: a['budget'], reverse=True)
+
+    total_budget = sum(a['budget'] for a in agencies)          # USD millions
+    regions = sorted({a['region'] for a in agencies})
+
+    by_region = defaultdict(float)
+    for a in agencies:
+        by_region[a['region']] += a['budget']
+    region_data = sorted(
+        [{'label': r, 'value': round(v)} for r, v in by_region.items()],
+        key=lambda x: x['value'], reverse=True
+    )
+
+    agency_data = [
+        {'acr': a['acr'], 'name': a['name'], 'country': a['country'],
+         'region': a['region'], 'budget': a['budget'], 'founded': a['founded']}
+        for a in agencies
+    ]
+
+    return render(request, 'home/dashboard.html', {
+        'num_agencies': len(agencies),
+        'total_budget_b': round(total_budget / 1000, 1),   # → billions
+        'num_regions': len(regions),
+        'regions': regions,
+        'agency_data': agency_data,
+        'region_data': region_data,
+    })
+
+
 def agency_list(request):
     profiles = AgencyProfile.objects.all()
     return render(request, 'home/agency_list.html', {'profiles': profiles})

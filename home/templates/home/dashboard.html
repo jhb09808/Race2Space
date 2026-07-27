@@ -1,0 +1,334 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Live Dashboard — Race2Space{% endblock %}
+
+{% block content %}
+<header class="dash-head">
+    <p class="eyebrow">Live dashboard</p>
+    <h1 class="section-title">The world in space, right now</h1>
+    <p class="dash-sub">Launches, crews and orbits update live from open space-data feeds; agency budgets are the latest annual figures.</p>
+</header>
+
+<!-- KPI TILES -->
+<section class="kpis">
+    <div class="kpi panel">
+        <span class="kpi-label">Agencies tracked</span>
+        <span class="kpi-num mono" data-count="{{ num_agencies }}">0</span>
+        <span class="kpi-foot">across {{ num_regions }} regions</span>
+    </div>
+    <div class="kpi panel">
+        <span class="kpi-label">Combined annual budget</span>
+        <span class="kpi-num mono">$<span data-count="{{ total_budget_b }}" data-decimals="1">0</span>B</span>
+        <span class="kpi-foot">est. USD / year</span>
+    </div>
+    <div class="kpi panel live">
+        <span class="kpi-label">Humans in space <em class="livedot"></em></span>
+        <span class="kpi-num mono" id="kpiCrew">—</span>
+        <span class="kpi-foot" id="kpiCrewFoot">fetching live…</span>
+    </div>
+    <div class="kpi panel live">
+        <span class="kpi-label">Next launch <em class="livedot"></em></span>
+        <span class="kpi-num mono kpi-countdown" id="kpiCountdown">—</span>
+        <span class="kpi-foot" id="kpiNextName">fetching live…</span>
+    </div>
+</section>
+
+<div class="dash-grid">
+    <!-- LIVE LAUNCHES -->
+    <section class="panel launches">
+        <div class="panel-head">
+            <h3>Launch schedule <em class="livedot"></em></h3>
+            <span class="mono src">source · thespacedevs</span>
+        </div>
+        <div id="upcomingList" class="launch-list">
+            <p class="loading mono">Loading upcoming launches…</p>
+        </div>
+        <h4 class="sub">Recently launched</h4>
+        <div id="previousList" class="launch-list">
+            <p class="loading mono">Loading…</p>
+        </div>
+    </section>
+
+    <!-- ISS LIVE MAP -->
+    <section class="panel iss">
+        <div class="panel-head">
+            <h3>ISS position <em class="livedot"></em></h3>
+            <span class="mono src" id="issCoords">—</span>
+        </div>
+        <div id="issMap"></div>
+        <div class="iss-stats">
+            <div><span class="mono" id="issSpeed">—</span><small>km/h</small></div>
+            <div><span class="mono" id="issAlt">—</span><small>km altitude</small></div>
+        </div>
+    </section>
+</div>
+
+<!-- SPENDING CHARTS -->
+<section class="panel spend">
+    <div class="panel-head">
+        <h3>Government space spending</h3>
+        <select id="regionFilter" class="form-select" style="max-width: 220px;">
+            <option value="All">All regions</option>
+            {% for r in regions %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+        </select>
+    </div>
+    <p class="chart-cap mono">Annual budget, USD millions · leaders dominate — filter by region to compare peers</p>
+    <div class="chart-box"><canvas id="agencyChart"></canvas></div>
+</section>
+
+<section class="panel spend">
+    <div class="panel-head"><h3>Spending by region</h3></div>
+    <div class="chart-box short"><canvas id="regionChart"></canvas></div>
+    <p class="note mono">Budgets are indicative annual estimates from public sources; CNSA figures are approximate.</p>
+</section>
+
+<style>
+    .dash-head { margin-bottom: 1.6rem; }
+    .dash-head .eyebrow { display: block; margin-bottom: 0.5rem; }
+    .dash-sub { color: var(--text-soft); max-width: 62ch; }
+
+    .livedot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--terra); margin-left: 0.35rem; vertical-align: middle; }
+    @media (prefers-reduced-motion: no-preference) { .livedot { animation: pulse 1.6s ease-in-out infinite; } }
+    @keyframes pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--terra) 60%, transparent); } 50% { opacity: .5; box-shadow: 0 0 0 5px transparent; } }
+
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.4rem; }
+    @media (max-width: 780px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+    .kpi { padding: 1.2rem 1.3rem; display: flex; flex-direction: column; gap: 0.15rem; }
+    .kpi-label { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-soft); }
+    .kpi-num { font-size: clamp(1.6rem, 3.4vw, 2.4rem); font-weight: 600; letter-spacing: -0.02em; color: var(--accent); line-height: 1.1; }
+    .kpi-countdown { font-size: clamp(1.3rem, 2.6vw, 1.9rem); }
+    .kpi-foot { font-size: 0.76rem; color: var(--text-soft); }
+
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+    @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+
+    .panel { padding: 1.4rem; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .panel-head h3 { margin: 0; font-size: 1.25rem; }
+    .src { font-size: 0.7rem; color: var(--text-soft); letter-spacing: 0.06em; }
+
+    .launch-list { display: flex; flex-direction: column; }
+    .launch-item { padding: 0.85rem 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 0.3rem 1rem; }
+    .launch-item:last-child { border-bottom: 0; }
+    .launch-name { font-weight: 600; font-size: 0.95rem; }
+    .launch-meta { font-family: var(--mono); font-size: 0.72rem; color: var(--text-soft); }
+    .launch-when { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); text-align: right; white-space: nowrap; }
+    .launch-when.past { color: var(--text-soft); }
+    .sub { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-soft); font-family: var(--mono); margin: 1.1rem 0 0.3rem; }
+    .loading { color: var(--text-soft); font-size: 0.85rem; padding: 0.6rem 0; }
+
+    #issMap { height: 300px; border-radius: 12px; overflow: hidden; background: var(--ground-2); }
+    .iss-stats { display: flex; gap: 2rem; margin-top: 0.9rem; }
+    .iss-stats span { font-size: 1.2rem; font-weight: 600; color: var(--text); }
+    .iss-stats small { display: block; font-size: 0.7rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .spend { margin-bottom: 1.2rem; }
+    .chart-cap { font-size: 0.74rem; color: var(--text-soft); margin: -0.4rem 0 0.8rem; }
+    .chart-box { position: relative; height: 460px; }
+    .chart-box.short { height: 300px; }
+    .note { font-size: 0.72rem; color: var(--text-soft); margin-top: 0.8rem; }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{{ agency_data|json_script:"agencyData" }}
+{{ region_data|json_script:"regionData" }}
+<script>
+(function () {
+    // ---------- token helpers (resolve CSS vars to real colours) ----------
+    var probe = document.createElement('span');
+    probe.style.display = 'none';
+    document.body.appendChild(probe);
+    function tok(v) { probe.style.color = 'var(' + v + ')'; return getComputedStyle(probe).color; }
+
+    var AGENCIES = JSON.parse(document.getElementById('agencyData').textContent);
+    var REGIONS = JSON.parse(document.getElementById('regionData').textContent);
+
+    function fmtUSD(m) { return m >= 1000 ? '$' + (m / 1000).toFixed(1) + 'B' : '$' + m + 'M'; }
+
+    // ---------- count-up for KPI tiles ----------
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.querySelectorAll('[data-count]').forEach(function (el) {
+        var target = parseFloat(el.getAttribute('data-count'));
+        var dec = parseInt(el.getAttribute('data-decimals') || '0', 10);
+        if (isNaN(target)) return;
+        if (reduce) { el.textContent = target.toFixed(dec); return; }
+        var dur = 1100, start = null;
+        function step(ts) {
+            if (!start) start = ts;
+            var p = Math.min((ts - start) / dur, 1);
+            el.textContent = (target * (1 - Math.pow(1 - p, 3))).toFixed(dec);
+            if (p < 1) requestAnimationFrame(step);
+            else el.textContent = target.toFixed(dec);
+        }
+        requestAnimationFrame(step);
+    });
+
+    // ---------- charts ----------
+    var agencyChart, regionChart;
+    function baseOpts() {
+        return {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function (c) {
+                            var d = c.raw && c.raw.meta ? c.raw.meta : null;
+                            var val = fmtUSD(c.parsed.x);
+                            return d ? (val + '  ·  ' + d.country) : val;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { color: tok('--line') }, ticks: { color: tok('--text-soft'),
+                     callback: function (v) { return v >= 1000 ? '$' + (v / 1000) + 'B' : '$' + v + 'M'; } } },
+                y: { grid: { display: false }, ticks: { color: tok('--text') } }
+            }
+        };
+    }
+
+    function buildAgency(region) {
+        var rows = AGENCIES.filter(function (a) { return region === 'All' || a.region === region; })
+                           .sort(function (a, b) { return b.budget - a.budget; })
+                           .slice(0, 15);
+        var labels = rows.map(function (a) { return a.acr; });
+        var data = rows.map(function (a) { return { x: a.budget, y: a.acr, meta: a }; });
+        return { labels: labels, data: data };
+    }
+
+    function renderCharts() {
+        if (typeof Chart === 'undefined') return;
+        Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+        var amber = tok('--accent'), teal = tok('--teal');
+
+        var a = buildAgency(document.getElementById('regionFilter').value);
+        var opts = baseOpts();
+        if (agencyChart) agencyChart.destroy();
+        agencyChart = new Chart(document.getElementById('agencyChart'), {
+            type: 'bar',
+            data: { labels: a.labels, datasets: [{ data: a.data, backgroundColor: amber, borderRadius: 4, borderSkipped: false, barThickness: 16, parsing: false }] },
+            options: opts
+        });
+
+        if (regionChart) regionChart.destroy();
+        regionChart = new Chart(document.getElementById('regionChart'), {
+            type: 'bar',
+            data: {
+                labels: REGIONS.map(function (r) { return r.label; }),
+                datasets: [{ data: REGIONS.map(function (r) { return r.value; }), backgroundColor: teal, borderRadius: 4, borderSkipped: false, barThickness: 18 }]
+            },
+            options: baseOpts()
+        });
+    }
+
+    document.getElementById('regionFilter').addEventListener('change', renderCharts);
+    if (typeof Chart !== 'undefined') { renderCharts(); }
+    // Recolour charts when the theme changes
+    new MutationObserver(renderCharts).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // ---------- LIVE: launches ----------
+    var LL = 'https://ll.thespacedevs.com/2.2.0';
+    function whenText(iso, past) {
+        if (!iso) return 'TBD';
+        var d = new Date(iso), now = new Date(), diff = (d - now) / 1000;
+        var opt = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        if (past || diff < 0) return d.toLocaleDateString(undefined, opt);
+        var days = Math.floor(diff / 86400), hrs = Math.floor((diff % 86400) / 3600);
+        if (days > 0) return 'T- ' + days + 'd ' + hrs + 'h';
+        var mins = Math.floor((diff % 3600) / 60);
+        return 'T- ' + hrs + 'h ' + mins + 'm';
+    }
+    function launchRow(l, past) {
+        var provider = (l.launch_service_provider && l.launch_service_provider.name) || '';
+        var rocket = (l.rocket && l.rocket.configuration && (l.rocket.configuration.full_name || l.rocket.configuration.name)) || '';
+        var pad = (l.pad && l.pad.location && l.pad.location.name) || '';
+        var meta = [rocket, provider].filter(Boolean).join(' · ');
+        return '<div class="launch-item">' +
+            '<div><div class="launch-name">' + (l.name || 'Unknown') + '</div>' +
+            '<div class="launch-meta">' + meta + (pad ? ' — ' + pad : '') + '</div></div>' +
+            '<div class="launch-when' + (past ? ' past' : '') + '">' + whenText(l.net, past) + '</div></div>';
+    }
+    function loadLaunches() {
+        fetch(LL + '/launch/upcoming/?limit=4&hide_recent_previous=true')
+            .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+            .then(function (j) {
+                var res = j.results || [];
+                document.getElementById('upcomingList').innerHTML =
+                    res.length ? res.map(function (l) { return launchRow(l, false); }).join('') : '<p class="loading mono">No upcoming launches listed.</p>';
+                if (res[0]) {
+                    document.getElementById('kpiNextName').textContent = res[0].name;
+                    startCountdown(res[0].net);
+                }
+            })
+            .catch(function () { document.getElementById('upcomingList').innerHTML = '<p class="loading mono">Live launch feed unavailable — try again shortly (rate-limited).</p>'; });
+
+        fetch(LL + '/launch/previous/?limit=3')
+            .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+            .then(function (j) {
+                var res = j.results || [];
+                document.getElementById('previousList').innerHTML =
+                    res.length ? res.map(function (l) { return launchRow(l, true); }).join('') : '';
+            })
+            .catch(function () { document.getElementById('previousList').innerHTML = ''; });
+    }
+    var cdTimer = null;
+    function startCountdown(iso) {
+        if (!iso) return;
+        var el = document.getElementById('kpiCountdown');
+        function tick() {
+            var diff = (new Date(iso) - new Date()) / 1000;
+            if (diff <= 0) { el.textContent = 'LIVE'; clearInterval(cdTimer); return; }
+            var d = Math.floor(diff / 86400), h = Math.floor((diff % 86400) / 3600),
+                m = Math.floor((diff % 3600) / 60), s = Math.floor(diff % 60);
+            el.textContent = (d > 0 ? d + 'd ' : '') + h + 'h ' + m + 'm ' + s + 's';
+        }
+        tick(); if (cdTimer) clearInterval(cdTimer); cdTimer = setInterval(tick, 1000);
+    }
+
+    // ---------- LIVE: humans in space ----------
+    fetch(LL + '/astronaut/?in_space=true&limit=100&mode=list')
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) {
+            document.getElementById('kpiCrew').textContent = j.count != null ? j.count : (j.results || []).length;
+            var names = (j.results || []).slice(0, 6).map(function (a) { return a.name; }).join(', ');
+            document.getElementById('kpiCrewFoot').textContent = names || 'currently in orbit';
+        })
+        .catch(function () {
+            document.getElementById('kpiCrew').textContent = '—';
+            document.getElementById('kpiCrewFoot').textContent = 'crew feed unavailable';
+        });
+
+    // ---------- LIVE: ISS position on map ----------
+    var issMap, issMarker;
+    function initISS() {
+        if (typeof L === 'undefined') return;
+        issMap = L.map('issMap', { zoomControl: false, attributionControl: false }).setView([0, 0], 1);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(issMap);
+        var icon = L.divIcon({ className: 'iss-icon', html: '🛰️', iconSize: [26, 26] });
+        issMarker = L.marker([0, 0], { icon: icon }).addTo(issMap);
+        pollISS(); setInterval(pollISS, 5000);
+    }
+    function pollISS() {
+        fetch('https://api.wheretheiss.at/v1/satellites/25544')
+            .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+            .then(function (d) {
+                var lat = d.latitude, lng = d.longitude;
+                issMarker.setLatLng([lat, lng]);
+                issMap.setView([lat, lng], issMap.getZoom() < 2 ? 2 : issMap.getZoom());
+                document.getElementById('issCoords').textContent = lat.toFixed(2) + '°, ' + lng.toFixed(2) + '°';
+                document.getElementById('issSpeed').textContent = Math.round(d.velocity).toLocaleString();
+                document.getElementById('issAlt').textContent = Math.round(d.altitude);
+            })
+            .catch(function () { document.getElementById('issCoords').textContent = 'unavailable'; });
+    }
+
+    loadLaunches();
+    initISS();
+})();
+</script>
+{% endblock %}
