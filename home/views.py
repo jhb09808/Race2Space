@@ -264,14 +264,9 @@ def _enrich_news(article):
 
 def news_list(request):
     from django.utils import timezone
-    articles = [_enrich_news(a) for a in NewsArticle.objects.all().order_by('-published_date')]
-    return render(request, 'home/news_list.html', {
-        'lead': articles[0] if articles else None,
-        'secondary': articles[1:5],
-        'latest': articles[5:16],
-        'total': len(articles),
-        'today': timezone.localdate(),
-    })
+    # Live space news is fetched client-side from the Spaceflight News API so it
+    # stays current without depending on the server's outbound network access.
+    return render(request, 'home/news_list.html', {'today': timezone.localdate()})
 
 def missions_list(request):
     missions = Mission.objects.all().order_by('-date')

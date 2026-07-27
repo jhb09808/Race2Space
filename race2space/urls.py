@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('home.urls')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve user-uploaded media (agency flags) through Django so they keep working
+# with DEBUG off, even without a separate media mapping on the host.
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

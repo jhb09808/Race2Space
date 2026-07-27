@@ -8,12 +8,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%uaf!r$7fa&7t$#$0dkm&+n@$9^-vbesdr20y3lit905hhrn+q"
+# Set DJANGO_SECRET_KEY in the environment for production; falls back to the
+# original key so existing deployments keep working.
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-%uaf!r$7fa&7t$#$0dkm&+n@$9^-vbesdr20y3lit905hhrn+q",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Defaults to False (production-safe). Set DJANGO_DEBUG=True locally to debug.
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in ("1", "true", "yes")
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS", ".pythonanywhere.com,localhost,127.0.0.1"
+).split(",")
+
+# Security hardening (secure cookies apply only when DEBUG is off / HTTPS)
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "SAMEORIGIN"
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_TRUSTED_ORIGINS = ["https://*.pythonanywhere.com"]
 
 # Application definition
 
