@@ -277,6 +277,15 @@ def missions_list(request):
     missions = Mission.objects.all().order_by('-date')
     return render(request, 'home/missions_list.html', {'missions': missions})
 
+def google_site_verification(request):
+    # Serves the Google Search Console HTML-file verification token.
+    from django.http import HttpResponse
+    return HttpResponse(
+        "google-site-verification: google3a2842200f62ea11.html",
+        content_type="text/html",
+    )
+
+
 def robots_txt(request):
     from django.http import HttpResponse
     sitemap = request.build_absolute_uri('/sitemap.xml')

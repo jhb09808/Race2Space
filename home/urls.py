@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home_page, name='home'),
+    path('google3a2842200f62ea11.html', views.google_site_verification, name='google_verify'),
     path('robots.txt', views.robots_txt, name='robots_txt'),
     path('sitemap.xml', views.sitemap_xml, name='sitemap_xml'),
     path('dashboard/', views.dashboard, name='dashboard'),
