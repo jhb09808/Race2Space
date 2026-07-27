@@ -1,7 +1,7 @@
 {% extends 'home/base.html' %}
 {% load static %}
 
-{% block title %}{{ profile.agency_name }} — {{ profile.country_name }} | Race2Space{% endblock %}
+{% block title %}{{ profile.agency_name }} — {{ profile.country_name }} Space Program | Race2Space{% endblock %}
 {% block meta_description %}{{ profile.overview|truncatewords:28 }}{% endblock %}
 {% block social_title %}{{ profile.agency_name }} ({{ profile.country_name }}){% endblock %}
 {% block social_desc %}{{ profile.overview|truncatewords:24 }}{% endblock %}
