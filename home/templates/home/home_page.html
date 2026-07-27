@@ -173,7 +173,64 @@
     </div>
 </section>
 
+<!-- ============ FAQ (SEO long-tail + structured data) ============ -->
+<section class="faq-block">
+    <h2 class="section-title">Developing countries in space — FAQ</h2>
+    <div class="faq">
+        <details>
+            <summary>Which developing countries have space agencies?</summary>
+            <p>Race2Space profiles 21 developing-country space agencies across Africa, Asia and Latin America — including India (ISRO), Brazil (AEB), Argentina (CONAE), Egypt (EgSA), South Africa (SANSA), Kenya (KENSA), Pakistan (SUPARCO), Indonesia, the Philippines (PhilSA), Türkiye, Iran, Azerbaijan, Ukraine and more. Each has a national space program pursuing satellites, research and, in several cases, its own launch capability.</p>
+        </details>
+        <details>
+            <summary>How much do developing countries spend on their space programs?</summary>
+            <p>Annual government space budgets among developing nations range widely — from around $220&nbsp;million for the largest spenders such as Azerbaijan and Indonesia, to roughly $50–150&nbsp;million for countries like the Philippines, Algeria and South Africa, down to a few million for emerging programs. Compare them interactively on the <a href="{% url 'dashboard' %}">live dashboard</a>.</p>
+        </details>
+        <details>
+            <summary>Which developing nation has launched the most objects into space?</summary>
+            <p>Among developing nations, Brazil leads with around 42 objects launched, followed by Türkiye (~32), Indonesia (~23) and Argentina (~19). China, once a developing space power itself, now operates one of the world's largest programs.</p>
+        </details>
+        <details>
+            <summary>Have developing countries reached the Moon or Mars?</summary>
+            <p>Yes. India reached Mars orbit on its first attempt in 2014 and, in 2023, became the first nation ever to land near the Moon's south pole with Chandrayaan-3. In 2021 the United Arab Emirates' Hope probe made it the first Arab nation to reach Mars. Explore these milestones on the <a href="{% url 'timeline_view' %}">history timeline</a>.</p>
+        </details>
+        <details>
+            <summary>What is the Global South's role in space exploration?</summary>
+            <p>Space has shifted from a two-superpower race into a global endeavour. Developing nations across the Global South now build and operate satellites for agriculture, connectivity, disaster response and climate monitoring — using space technology to drive sustainable development at home while contributing to humanity's expansion into space.</p>
+        </details>
+    </div>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"Which developing countries have space agencies?","acceptedAnswer":{"@type":"Answer","text":"Race2Space profiles 21 developing-country space agencies across Africa, Asia and Latin America, including India (ISRO), Brazil (AEB), Argentina (CONAE), Egypt (EgSA), South Africa (SANSA), Kenya (KENSA), Pakistan (SUPARCO), Indonesia, the Philippines (PhilSA), Türkiye, Iran, Azerbaijan and Ukraine."}},
+    {"@type":"Question","name":"How much do developing countries spend on their space programs?","acceptedAnswer":{"@type":"Answer","text":"Annual space budgets range from around $220 million for the largest spenders such as Azerbaijan and Indonesia, to $50-150 million for countries like the Philippines, Algeria and South Africa, down to a few million for emerging programs."}},
+    {"@type":"Question","name":"Which developing nation has launched the most objects into space?","acceptedAnswer":{"@type":"Answer","text":"Among developing nations, Brazil leads with around 42 objects launched, followed by Türkiye (~32), Indonesia (~23) and Argentina (~19)."}},
+    {"@type":"Question","name":"Have developing countries reached the Moon or Mars?","acceptedAnswer":{"@type":"Answer","text":"Yes. India reached Mars orbit on its first attempt in 2014 and landed near the Moon's south pole with Chandrayaan-3 in 2023. The UAE's Hope probe reached Mars in 2021."}},
+    {"@type":"Question","name":"What is the Global South's role in space exploration?","acceptedAnswer":{"@type":"Answer","text":"Developing nations across the Global South build and operate satellites for agriculture, connectivity, disaster response and climate monitoring, using space technology to drive sustainable development while contributing to humanity's expansion into space."}}
+  ]
+}
+</script>
+
 <style>
+    .faq-block { margin: 3rem 0 1rem; }
+    .faq { display: flex; flex-direction: column; gap: 0.7rem; max-width: 820px; }
+    .faq details {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+        padding: 0.2rem 1.2rem; transition: border-color .2s;
+    }
+    .faq details[open] { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+    .faq summary {
+        font-family: var(--serif); font-size: 1.1rem; font-weight: 700; cursor: pointer;
+        padding: 1rem 0; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: '+'; color: var(--accent); font-size: 1.4rem; font-family: var(--mono); transition: transform .2s; }
+    .faq details[open] summary::after { transform: rotate(45deg); }
+    .faq details p { color: var(--text-soft); padding: 0 0 1.1rem; margin: 0; font-size: 0.95rem; }
+
     .r2s-hero {
         display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(1.5rem, 4vw, 3rem);
         align-items: center; padding: clamp(1.5rem, 5vw, 3.5rem) 0 clamp(1rem, 3vw, 2rem);
