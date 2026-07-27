@@ -277,6 +277,42 @@ def missions_list(request):
     missions = Mission.objects.all().order_by('-date')
     return render(request, 'home/missions_list.html', {'missions': missions})
 
+def robots_txt(request):
+    from django.http import HttpResponse
+    sitemap = request.build_absolute_uri('/sitemap.xml')
+    lines = ["User-agent: *", "Allow: /", "Disallow: /admin/", "", "Sitemap: " + sitemap]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
+
+
+def sitemap_xml(request):
+    from django.http import HttpResponse
+    from django.urls import reverse
+    from django.utils import timezone
+
+    static_pages = ['home', 'dashboard', 'agency_list', 'timeline_view',
+                    'map_view', 'news_list', 'missions_list', 'forum_home']
+    today = timezone.now().date().isoformat()
+
+    urls = []
+    for name in static_pages:
+        priority = '1.0' if name == 'home' else '0.8'
+        urls.append((request.build_absolute_uri(reverse(name)), priority, 'weekly'))
+    for a in AgencyProfile.objects.all():
+        urls.append((request.build_absolute_uri(reverse('agency_detail', args=[a.pk])), '0.7', 'monthly'))
+    for d in Discussion.objects.all():
+        urls.append((request.build_absolute_uri(reverse('discussion_detail', args=[d.id])), '0.5', 'weekly'))
+
+    parts = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, priority, freq in urls:
+        parts.append(
+            f'<url><loc>{loc}</loc><lastmod>{today}</lastmod>'
+            f'<changefreq>{freq}</changefreq><priority>{priority}</priority></url>'
+        )
+    parts.append('</urlset>')
+    return HttpResponse("\n".join(parts), content_type="application/xml")
+
+
 def timeline_view(request):
     from .space_data import TIMELINE_EVENTS
     events = sorted(TIMELINE_EVENTS, key=lambda e: e['year'])

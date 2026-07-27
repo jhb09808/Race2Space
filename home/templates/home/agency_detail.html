@@ -1,7 +1,22 @@
 {% extends 'home/base.html' %}
 {% load static %}
 
-{% block title %}{{ profile.country_name }} — {{ profile.agency_name }}{% endblock %}
+{% block title %}{{ profile.agency_name }} — {{ profile.country_name }} | Race2Space{% endblock %}
+{% block meta_description %}{{ profile.overview|truncatewords:28 }}{% endblock %}
+{% block social_title %}{{ profile.agency_name }} ({{ profile.country_name }}){% endblock %}
+{% block social_desc %}{{ profile.overview|truncatewords:24 }}{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "GovernmentOrganization",
+  "name": "{{ profile.agency_name|escapejs }}",
+  "areaServed": "{{ profile.country_name|escapejs }}",
+  {% if profile.website %}"url": "{{ profile.website }}",{% endif %}
+  "description": "{{ profile.overview|truncatewords:30|escapejs }}"
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <article class="agency-detail">

@@ -4,7 +4,49 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Race2Space{% endblock %}</title>
+    <title>{% block title %}Race2Space — Developing nations in space{% endblock %}</title>
+
+    <!-- SEO -->
+    <meta name="description" content="{% block meta_description %}Race2Space showcases the space programs, missions and milestones of developing nations — country profiles, a live dashboard of launches and spending, an interactive timeline, and a community forum.{% endblock %}">
+    <meta name="keywords" content="developing countries space, Global South space agencies, space exploration, satellites, ISRO, CNSA, space missions, space budgets, Race2Space">
+    <meta name="author" content="Jerome Bustarga">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#101728">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <!-- Open Graph (Facebook, LinkedIn, Slack, Discord) -->
+    <meta property="og:site_name" content="Race2Space">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="{% block social_title %}Race2Space — Developing nations in space{% endblock %}">
+    <meta property="og:description" content="{% block social_desc %}The Global South's rise into orbit: agency profiles, live launches, spending data, an interactive timeline and a community forum.{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'home/racespace.png' %}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Race2Space — Developing nations in space{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_desc %}The Global South's rise into orbit: profiles, live data, timeline and community.{% endblock %}">
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'home/racespace.png' %}">
+
+    <!-- Structured data -->
+    {% block structured_data %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Race2Space",
+      "url": "{{ request.scheme }}://{{ request.get_host }}/",
+      "description": "Space programs, missions and milestones of developing nations.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Race2Space",
+        "logo": { "@type": "ImageObject", "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'home/racespace.png' %}" }
+      }
+    }
+    </script>
+    {% endblock %}
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="icon" type="image/x-icon" href="{% static 'home/favicon.ico' %}">
