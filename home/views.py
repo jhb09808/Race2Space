@@ -132,9 +132,46 @@ def agency_detail(request, pk):
     space_objects = SpaceObject.objects.filter(state_organization=profile.country_name)
     return render(request, 'home/agency_detail.html', {'profile': profile, 'space_objects': space_objects})
 
+_AVATAR_COLORS = ['#E1912A', '#C15A3E', '#2F7E72', '#5B7CB8', '#8C6BB1', '#B04A6E', '#4F8F5C']
+
+
+def _avatar(name):
+    n = (name or 'Anon').strip() or 'Anon'
+    return {'initial': n[0].upper(), 'color': _AVATAR_COLORS[sum(map(ord, n)) % len(_AVATAR_COLORS)]}
+
+
+def _flair(subject):
+    s = (subject or '').lower()
+    if '?' in (subject or ''):
+        return 'Question'
+    if any(w in s for w in ['launch', 'lands', 'landing', 'reaches', 'orbit', 'rocket']):
+        return 'Launch'
+    if any(w in s for w in ['news', 'announce', 'budget', 'spending', 'deorbit']):
+        return 'News'
+    if any(w in s for w in ['best', 'resource', 'learn', 'how ', 'recommend']):
+        return 'Resource'
+    return 'Discussion'
+
+
+def _score(disc, comments):
+    return (disc.id * 41) % 380 + comments * 14 + 11
+
+
 def forum_home(request):
-    discussions = Discussion.objects.all()
-    return render(request, 'home/forum_home.html', {'discussions': discussions})
+    sort = request.GET.get('sort', 'hot')
+    discussions = list(Discussion.objects.all())
+    for d in discussions:
+        d.comment_count = d.replies.count()
+        d.score = _score(d, d.comment_count)
+        d.flair = _flair(d.subject)
+        d.avatar = _avatar(d.name)
+    if sort == 'new':
+        discussions.sort(key=lambda x: x.created_at, reverse=True)
+    elif sort == 'top':
+        discussions.sort(key=lambda x: x.score, reverse=True)
+    else:  # 'hot' — blend score with recent engagement
+        discussions.sort(key=lambda x: x.score + x.comment_count * 25, reverse=True)
+    return render(request, 'home/forum_home.html', {'discussions': discussions, 'sort': sort})
 
 def start_discussion(request):
     if request.method == 'POST':
@@ -175,7 +212,17 @@ def discussion_detail(request, discussion_id):
             return redirect('discussion_detail', discussion_id=discussion_id)
     else:
         form = ReplyForm()
-    return render(request, 'home/discussion_detail.html', {'discussion': discussion, 'form': form})
+    replies = list(discussion.replies.all().order_by('created_at'))
+    discussion.avatar = _avatar(discussion.name)
+    discussion.comment_count = len(replies)
+    discussion.score = _score(discussion, discussion.comment_count)
+    discussion.flair = _flair(discussion.subject)
+    for r in replies:
+        r.avatar = _avatar(r.name)
+        r.rscore = (r.id * 17) % 90 + 3
+    return render(request, 'home/discussion_detail.html', {
+        'discussion': discussion, 'form': form, 'replies': replies,
+    })
 
 def map_view(request):
     agencies = AgencyProfile.objects.all()
@@ -226,5 +273,10 @@ def missions_list(request):
     return render(request, 'home/missions_list.html', {'missions': missions})
 
 def timeline_view(request):
-    events = TimelineEvent.objects.all().order_by('date')
-    return render(request, 'home/timeline.html', {'events': events})
+    from .space_data import TIMELINE_EVENTS
+    events = sorted(TIMELINE_EVENTS, key=lambda e: e['year'])
+    return render(request, 'home/timeline.html', {
+        'events': events,
+        'span_start': events[0]['year'] if events else '',
+        'span_end': events[-1]['year'] if events else '',
+    })

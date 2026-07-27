@@ -1,72 +1,77 @@
 {% extends 'home/base.html' %}
 {% load static %}
 
-{% block title %}Space Exploration Timeline — Race2Space{% endblock %}
-
-{% block extra_styles %}
-<link rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
-<style>
-    .timeline-intro { max-width: 70ch; margin-bottom: 1.6rem; }
-    .timeline-intro .eyebrow { display: block; margin-bottom: 0.5rem; }
-    .timeline-intro p { color: var(--text-soft); }
-
-    .timeline-wrap { padding: 0.6rem; overflow: hidden; }
-    #timeline-embed {
-        height: 600px;
-        background-image: linear-gradient(rgba(16,23,40,0.35), rgba(16,23,40,0.35)), url("{% static 'home/timelinebg.jpg' %}");
-        background-size: cover; background-position: center; border-radius: 12px;
-    }
-
-    /* Legibility tweaks for TimelineJS markers */
-    .tl-timemarker-text {
-        transform: rotate(0deg) !important; white-space: normal !important;
-        max-width: 100px !important; min-width: 100px !important; width: 100px !important;
-    }
-    .tl-timemarker-content-container { width: auto !important; height: auto !important; }
-    .tl-timemarker { height: auto !important; }
-    .tl-timeaxis-tick-text { transform: rotate(0deg) !important; text-align: center !important; left: 0 !important; right: 0 !important; }
-    .tl-timeaxis-minor .tl-timeaxis-tick-text { font-size: 10px !important; }
-    .tl-timeaxis-major .tl-timeaxis-tick-text { font-size: 12px !important; font-weight: bold !important; }
-    .tl-timeaxis-tick { height: 50px !important; }
-</style>
-{% endblock %}
+{% block title %}Timeline — Race2Space{% endblock %}
 
 {% block content %}
-<div class="timeline-intro">
-    <p class="eyebrow">History</p>
-    <h1 class="section-title">Space Exploration Timeline</h1>
-    <p>Key milestones in the space journeys of developing nations — scroll and navigate through the moments that shaped their path to orbit.</p>
-</div>
+<header class="tl-head">
+    <p class="eyebrow">History · {{ span_start }}–{{ span_end }}</p>
+    <h1 class="section-title">The road to a global space age</h1>
+    <p class="tl-sub">From the first satellite to the first landing at the Moon's south pole — the milestones that carried developing nations into orbit, alongside the world firsts that set the pace.</p>
+    <div class="tl-legend mono">
+        <span><i class="dot" style="background:var(--terra)"></i>Landmark first</span>
+        <span><i class="dot" style="background:var(--accent)"></i>Developing nation</span>
+        <span><i class="dot" style="background:var(--teal)"></i>Global milestone</span>
+    </div>
+</header>
 
-<div class="timeline-wrap panel">
-    <div id="timeline-embed"></div>
-</div>
+<ol class="tl">
+    {% for e in events %}
+    <li class="tl-item reveal" data-kind="{{ e.kind }}">
+        <div class="tl-year mono">{{ e.year }}</div>
+        <span class="tl-dot" style="background: {% if e.kind == 'landmark' %}var(--terra){% elif e.kind == 'developing' %}var(--accent){% else %}var(--teal){% endif %};"></span>
+        <div class="tl-card panel">
+            <div class="tl-meta mono">
+                <span class="tl-when">{{ e.when }}</span>
+                <span class="tl-tag">{{ e.tag }}</span>
+            </div>
+            <h3>{{ e.title }}</h3>
+            <p>{{ e.text }}</p>
+        </div>
+    </li>
+    {% endfor %}
+</ol>
 
-<script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+<style>
+    .tl-head { max-width: 70ch; margin-bottom: 2.5rem; }
+    .tl-head .eyebrow { display: block; margin-bottom: 0.5rem; }
+    .tl-sub { color: var(--text-soft); }
+    .tl-legend { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 1.2rem; font-size: 0.72rem; color: var(--text-soft); }
+    .tl-legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+    .tl-legend .dot, .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    .tl { list-style: none; position: relative; margin: 0; padding: 0; max-width: 760px; }
+    .tl::before { content: ''; position: absolute; left: 84px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
+    @media (max-width: 620px) { .tl::before { left: 20px; } }
+
+    .tl-item { position: relative; display: grid; grid-template-columns: 84px 1fr; gap: 0 2rem; padding-bottom: 1.6rem; }
+    @media (max-width: 620px) { .tl-item { grid-template-columns: 20px 1fr; gap: 0 1.3rem; } .tl-year { display: none; } }
+    .tl-year { text-align: right; font-weight: 700; font-size: 1.05rem; color: var(--text-soft); padding-top: 0.9rem; padding-right: 24px; font-variant-numeric: tabular-nums; }
+    .tl-dot {
+        position: absolute; left: 78px; top: 1rem; width: 14px; height: 14px; border-radius: 50%;
+        box-shadow: 0 0 0 4px var(--ground); z-index: 1;
+    }
+    @media (max-width: 620px) { .tl-dot { left: 14px; } }
+    .tl-card { padding: 1.2rem 1.4rem; }
+    .tl-card h3 { font-size: 1.2rem; margin: 0.4rem 0 0.4rem; }
+    .tl-card p { color: var(--text-soft); margin: 0; font-size: 0.94rem; }
+    .tl-meta { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .tl-when { color: var(--accent); }
+    .tl-tag { color: var(--text-soft); }
+
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+</style>
+
 <script>
-    var timeline_json = {
-        "events": [
-            {% for event in events %}
-            {
-                "start_date": { "year": {{ event.date.year }}, "month": {{ event.date.month }}, "day": {{ event.date.day }} },
-                "text": {
-                    "headline": "{{ event.title|escapejs }}",
-                    "text": "{{ event.description|escapejs }}{% if event.link %}<br><a href='{{ event.link }}' class='btn btn-primary mt-2' target='_blank' rel='noopener'>Learn More</a>{% endif %}"
-                },
-                "media": { "url": "{{ event.media_url|escapejs }}", "caption": "{{ event.media_caption|escapejs }}" }
-            }{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ]
-    };
-
-    var options = {
-        initial_zoom: 2, timenav_position: 'bottom',
-        marker_height_min: 30, marker_width_min: 100, marker_padding: 5,
-        timenav_height_min: 150, height: 600
-    };
-
-    document.addEventListener('DOMContentLoaded', function () {
-        new TL.Timeline('timeline-embed', timeline_json, options);
-    });
+    (function () {
+        var items = document.querySelectorAll('.tl-item.reveal');
+        if (!('IntersectionObserver' in window)) { items.forEach(function (i) { i.classList.add('in'); }); return; }
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: 0.15 });
+        items.forEach(function (i) { io.observe(i); });
+    })();
 </script>
 {% endblock %}
