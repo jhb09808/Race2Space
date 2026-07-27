@@ -12,6 +12,9 @@
         <div>
             <p class="eyebrow">{{ profile.country_name }}</p>
             <h1>{{ profile.agency_name }}</h1>
+            {% if profile.website %}
+            <a class="agency-website btn btn-primary" href="{{ profile.website }}" target="_blank" rel="noopener">Visit official website ↗</a>
+            {% endif %}
         </div>
     </header>
 
@@ -58,6 +61,7 @@
     .detail-flag { width: 120px; flex: 0 0 auto; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 8px 20px -12px rgba(0,0,0,.5); }
     .detail-flag img { width: 100%; height: auto; display: block; }
     .detail-head h1 { margin: 0; }
+    .agency-website { display: inline-block; margin-top: 0.9rem; font-size: 0.76rem; }
     .detail-body section { margin-bottom: 1.8rem; }
     .detail-body p { color: var(--text-soft); }
     .objects-section { margin-top: 2.5rem; }

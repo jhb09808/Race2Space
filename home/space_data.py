@@ -124,3 +124,33 @@ TIMELINE_EVENTS = [
      "title": "The frontier keeps widening",
      "text": "More developing nations launch satellites, join lunar programs and grow ground-station networks — space is now a genuinely global endeavour."},
 ]
+
+
+# ---------------------------------------------------------------------------
+# Official website for each agency profiled in the database, keyed by the exact
+# country_name stored on AgencyProfile. Kept static so every agency links out
+# without a schema change.
+# ---------------------------------------------------------------------------
+AGENCY_WEBSITES = {
+    "Algeria":      "https://www.asal.dz",
+    "Angola":       "https://www.ggpen.gov.ao",
+    "Argentina":    "https://www.argentina.gob.ar/ciencia/conae",
+    "Azerbaijan":   "https://www.azercosmos.az",
+    "Bahrain":      "https://www.nssa.gov.bh",
+    "Brazil":       "https://www.gov.br/aeb",
+    "China":        "http://en.cmse.gov.cn",
+    "Egypt":        "https://egsa.gov.eg",
+    "India":        "https://www.isro.gov.in",
+    "Indonesia":    "https://www.brin.go.id",
+    "Iran":         "https://isa.ir",
+    "Kenya":        "https://ksa.go.ke",
+    "Mexico":       "https://www.gob.mx/aem",
+    "Pakistan":     "https://www.suparco.gov.pk",
+    "Peru":         "https://www.gob.pe/conida",
+    "Philippines":  "https://philsa.gov.ph",
+    "South Africa": "https://www.sansa.org.za",
+    "Türkiye":      "https://www.tua.gov.tr",
+    "Ukraine":      "https://www.nkau.gov.ua",
+    "Venezuela":    "http://abae.gob.ve",
+    "Zimbabwe":     "https://www.zingsa.ac.zw",
+}

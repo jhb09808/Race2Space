@@ -12,15 +12,20 @@
 
 <div class="agency-grid">
     {% for profile in profiles|dictsort:"country_name" %}
-    <a class="agency-card card" href="{% url 'agency_detail' profile.pk %}">
-        <div class="agency-flag">
-            <img src="{{ profile.flag.url }}" alt="{{ profile.country_name }} flag">
-        </div>
-        <div class="agency-info">
-            <h5>{{ profile.country_name }}</h5>
-            <p>{{ profile.agency_name }}</p>
-        </div>
-    </a>
+    <div class="agency-card card">
+        <a class="agency-main" href="{% url 'agency_detail' profile.pk %}">
+            <div class="agency-flag">
+                <img src="{{ profile.flag.url }}" alt="{{ profile.country_name }} flag">
+            </div>
+            <div class="agency-info">
+                <h5>{{ profile.country_name }}</h5>
+                <p>{{ profile.agency_name }}</p>
+            </div>
+        </a>
+        {% if profile.website %}
+        <a class="agency-site mono" href="{{ profile.website }}" target="_blank" rel="noopener">Official site ↗</a>
+        {% endif %}
+    </div>
     {% endfor %}
 </div>
 
@@ -32,15 +37,21 @@
     .agency-grid {
         display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.2rem;
     }
-    .agency-card { display: flex; flex-direction: column; text-decoration: none; color: var(--text) !important; }
+    .agency-card { display: flex; flex-direction: column; }
+    .agency-main { display: flex; flex-direction: column; text-decoration: none; color: var(--text) !important; flex: 1; }
     .agency-flag {
         aspect-ratio: 3 / 2; overflow: hidden; background: var(--ground-2);
         border-bottom: 1px solid var(--line);
     }
     .agency-flag img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
     .agency-card:hover .agency-flag img { transform: scale(1.06); }
-    .agency-info { padding: 1rem 1.2rem 1.2rem; }
+    .agency-info { padding: 1rem 1.2rem 0.8rem; }
     .agency-info h5 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 0.15rem; }
     .agency-info p { color: var(--text-soft); font-size: 0.85rem; margin: 0; }
+    .agency-site {
+        display: block; padding: 0.7rem 1.2rem; border-top: 1px solid var(--line);
+        font-size: 0.72rem; letter-spacing: 0.04em; color: var(--teal); text-decoration: none; transition: color .2s, background .2s;
+    }
+    .agency-site:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
 </style>
 {% endblock %}

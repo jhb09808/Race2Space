@@ -124,11 +124,16 @@ def dashboard(request):
 
 
 def agency_list(request):
-    profiles = AgencyProfile.objects.all()
+    from .space_data import AGENCY_WEBSITES
+    profiles = list(AgencyProfile.objects.all())
+    for p in profiles:
+        p.website = AGENCY_WEBSITES.get(p.country_name)
     return render(request, 'home/agency_list.html', {'profiles': profiles})
 
 def agency_detail(request, pk):
+    from .space_data import AGENCY_WEBSITES
     profile = get_object_or_404(AgencyProfile, pk=pk)
+    profile.website = AGENCY_WEBSITES.get(profile.country_name)
     space_objects = SpaceObject.objects.filter(state_organization=profile.country_name)
     return render(request, 'home/agency_detail.html', {'profile': profile, 'space_objects': space_objects})
 

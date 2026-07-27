@@ -7,71 +7,149 @@
 <header class="tl-head">
     <p class="eyebrow">History · {{ span_start }}–{{ span_end }}</p>
     <h1 class="section-title">The road to a global space age</h1>
-    <p class="tl-sub">From the first satellite to the first landing at the Moon's south pole — the milestones that carried developing nations into orbit, alongside the world firsts that set the pace.</p>
-    <div class="tl-legend mono">
-        <span><i class="dot" style="background:var(--terra)"></i>Landmark first</span>
-        <span><i class="dot" style="background:var(--accent)"></i>Developing nation</span>
-        <span><i class="dot" style="background:var(--teal)"></i>Global milestone</span>
-    </div>
+    <p class="tl-sub">Step through the milestones that carried developing nations into orbit — use the arrows, your keyboard, or click a year on the track below.</p>
 </header>
 
-<ol class="tl">
-    {% for e in events %}
-    <li class="tl-item reveal" data-kind="{{ e.kind }}">
-        <div class="tl-year mono">{{ e.year }}</div>
-        <span class="tl-dot" style="background: {% if e.kind == 'landmark' %}var(--terra){% elif e.kind == 'developing' %}var(--accent){% else %}var(--teal){% endif %};"></span>
-        <div class="tl-card panel">
-            <div class="tl-meta mono">
-                <span class="tl-when">{{ e.when }}</span>
-                <span class="tl-tag">{{ e.tag }}</span>
-            </div>
-            <h3>{{ e.title }}</h3>
-            <p>{{ e.text }}</p>
+<div class="tl-app">
+    <button class="tl-nav prev" id="tlPrev" type="button" aria-label="Previous event">‹</button>
+
+    <div class="tl-stage panel" id="tlStage">
+        <div class="tl-slide" id="tlSlide">
+            <div class="tl-year mono" id="tlYear"></div>
+            <div class="tl-meta mono"><span id="tlWhen"></span><span class="tl-tag" id="tlTag"></span></div>
+            <h2 id="tlTitle"></h2>
+            <p id="tlText"></p>
+            <div class="tl-progress mono" id="tlProg"></div>
         </div>
-    </li>
-    {% endfor %}
-</ol>
+    </div>
+
+    <button class="tl-nav next" id="tlNext" type="button" aria-label="Next event">›</button>
+</div>
+
+<!-- Clickable year scrubber -->
+<div class="tl-track-wrap">
+    <div class="tl-track" id="tlTrack">
+        <div class="tl-track-line"></div>
+        {% for e in events %}
+        <button class="tl-tick" type="button" data-i="{{ forloop.counter0 }}"
+                data-kind="{{ e.kind }}" aria-label="{{ e.year }}: {{ e.title }}">
+            <span class="tl-dot" style="background: {% if e.kind == 'landmark' %}var(--terra){% elif e.kind == 'developing' %}var(--accent){% else %}var(--teal){% endif %};"></span>
+            <span class="tl-tick-year mono">{{ e.year }}</span>
+        </button>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="tl-legend mono">
+    <span><i class="ldot" style="background:var(--terra)"></i>Landmark first</span>
+    <span><i class="ldot" style="background:var(--accent)"></i>Developing nation</span>
+    <span><i class="ldot" style="background:var(--teal)"></i>Global milestone</span>
+</div>
+
+{{ events|json_script:"tlData" }}
 
 <style>
-    .tl-head { max-width: 70ch; margin-bottom: 2.5rem; }
+    .tl-head { max-width: 68ch; margin-bottom: 2rem; }
     .tl-head .eyebrow { display: block; margin-bottom: 0.5rem; }
     .tl-sub { color: var(--text-soft); }
-    .tl-legend { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 1.2rem; font-size: 0.72rem; color: var(--text-soft); }
-    .tl-legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
-    .tl-legend .dot, .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 
-    .tl { list-style: none; position: relative; margin: 0; padding: 0; max-width: 760px; }
-    .tl::before { content: ''; position: absolute; left: 84px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
-    @media (max-width: 620px) { .tl::before { left: 20px; } }
-
-    .tl-item { position: relative; display: grid; grid-template-columns: 84px 1fr; gap: 0 2rem; padding-bottom: 1.6rem; }
-    @media (max-width: 620px) { .tl-item { grid-template-columns: 20px 1fr; gap: 0 1.3rem; } .tl-year { display: none; } }
-    .tl-year { text-align: right; font-weight: 700; font-size: 1.05rem; color: var(--text-soft); padding-top: 0.9rem; padding-right: 24px; font-variant-numeric: tabular-nums; }
-    .tl-dot {
-        position: absolute; left: 78px; top: 1rem; width: 14px; height: 14px; border-radius: 50%;
-        box-shadow: 0 0 0 4px var(--ground); z-index: 1;
+    .tl-app { display: grid; grid-template-columns: auto 1fr auto; align-items: stretch; gap: 0.8rem; }
+    .tl-nav {
+        background: var(--surface); border: 1px solid var(--line); color: var(--text);
+        border-radius: 14px; width: 52px; font-size: 1.8rem; cursor: pointer; transition: all .2s; flex: 0 0 auto;
     }
-    @media (max-width: 620px) { .tl-dot { left: 14px; } }
-    .tl-card { padding: 1.2rem 1.4rem; }
-    .tl-card h3 { font-size: 1.2rem; margin: 0.4rem 0 0.4rem; }
-    .tl-card p { color: var(--text-soft); margin: 0; font-size: 0.94rem; }
-    .tl-meta { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
-    .tl-when { color: var(--accent); }
-    .tl-tag { color: var(--text-soft); }
+    .tl-nav:hover { border-color: var(--accent); color: var(--accent); }
+    .tl-nav:disabled { opacity: 0.35; cursor: default; }
+    .tl-stage {
+        --kind: var(--accent);
+        position: relative; overflow: hidden; padding: clamp(1.6rem, 4vw, 2.6rem);
+        min-height: 300px; display: flex; align-items: center;
+        border-left: 4px solid var(--kind);
+    }
+    .tl-slide { width: 100%; }
+    .tl-year { font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 700; color: var(--kind); line-height: 1; letter-spacing: -0.02em; }
+    .tl-meta { display: flex; gap: 0.8rem; align-items: center; margin: 0.6rem 0 0.9rem; font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-soft); }
+    .tl-meta .tl-tag { padding: 0.15rem 0.6rem; border: 1px solid var(--line); border-radius: 100px; }
+    .tl-stage h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 0.7rem; }
+    .tl-stage p { color: var(--text-soft); font-size: 1.02rem; max-width: 60ch; margin: 0; }
+    .tl-progress { position: absolute; top: 1.2rem; right: 1.4rem; font-size: 0.78rem; color: var(--text-soft); }
 
-    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
-    .reveal.in { opacity: 1; transform: none; }
-    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+    @keyframes tlIn { from { opacity: 0; transform: translateX(var(--dir, 16px)); } to { opacity: 1; transform: none; } }
+    .tl-slide.anim { animation: tlIn .38s ease; }
+    @media (prefers-reduced-motion: reduce) { .tl-slide.anim { animation: none; } }
+
+    .tl-track-wrap { margin-top: 1.4rem; overflow-x: auto; padding-bottom: 0.6rem; }
+    .tl-track { position: relative; display: flex; gap: 0; min-width: max-content; padding: 0.5rem 0.5rem 0; }
+    .tl-track-line { position: absolute; left: 0; right: 0; top: 14px; height: 2px; background: var(--line); }
+    .tl-tick {
+        position: relative; background: none; border: 0; cursor: pointer; display: flex; flex-direction: column;
+        align-items: center; gap: 0.5rem; padding: 0 0.55rem; min-width: 62px; color: var(--text-soft);
+    }
+    .tl-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 0 4px var(--ground); transition: transform .2s; z-index: 1; opacity: 0.55; }
+    .tl-tick-year { font-size: 0.72rem; transition: color .2s; }
+    .tl-tick:hover .tl-dot { transform: scale(1.2); opacity: 0.85; }
+    .tl-tick:hover .tl-tick-year { color: var(--text); }
+    .tl-tick.active .tl-dot { opacity: 1; transform: scale(1.4); }
+    .tl-tick.active .tl-tick-year { color: var(--text); font-weight: 700; }
+
+    .tl-legend { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 1.4rem; font-size: 0.72rem; color: var(--text-soft); }
+    .tl-legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+    .ldot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    @media (max-width: 560px) {
+        .tl-nav { width: 42px; font-size: 1.4rem; }
+        .tl-stage { min-height: 340px; }
+    }
 </style>
 
 <script>
     (function () {
-        var items = document.querySelectorAll('.tl-item.reveal');
-        if (!('IntersectionObserver' in window)) { items.forEach(function (i) { i.classList.add('in'); }); return; }
-        var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-        }, { threshold: 0.15 });
-        items.forEach(function (i) { io.observe(i); });
+        var EVENTS = JSON.parse(document.getElementById('tlData').textContent);
+        if (!EVENTS.length) return;
+        var idx = 0;
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var slide = document.getElementById('tlSlide');
+        var stage = document.getElementById('tlStage');
+        var prev = document.getElementById('tlPrev'), next = document.getElementById('tlNext');
+        var ticks = Array.prototype.slice.call(document.querySelectorAll('.tl-tick'));
+
+        function kindColor(k) { return k === 'landmark' ? 'var(--terra)' : k === 'developing' ? 'var(--accent)' : 'var(--teal)'; }
+
+        function show(i, dir) {
+            i = Math.max(0, Math.min(EVENTS.length - 1, i));
+            idx = i;
+            var e = EVENTS[i];
+            stage.style.setProperty('--kind', kindColor(e.kind));
+            document.getElementById('tlYear').textContent = e.year;
+            document.getElementById('tlWhen').textContent = e.when;
+            document.getElementById('tlTag').textContent = e.tag;
+            document.getElementById('tlTitle').textContent = e.title;
+            document.getElementById('tlText').textContent = e.text;
+            document.getElementById('tlProg').textContent = (i + 1) + ' / ' + EVENTS.length;
+            if (!reduce) {
+                slide.style.setProperty('--dir', (dir < 0 ? '-16px' : '16px'));
+                slide.classList.remove('anim'); void slide.offsetWidth; slide.classList.add('anim');
+            }
+            ticks.forEach(function (t, ti) { t.classList.toggle('active', ti === i); });
+            prev.disabled = (i === 0); next.disabled = (i === EVENTS.length - 1);
+            var at = ticks[i];
+            if (at && at.scrollIntoView) at.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+        }
+
+        prev.addEventListener('click', function () { show(idx - 1, -1); });
+        next.addEventListener('click', function () { show(idx + 1, 1); });
+        ticks.forEach(function (t) {
+            t.addEventListener('click', function () {
+                var i = parseInt(t.getAttribute('data-i'), 10);
+                show(i, i < idx ? -1 : 1);
+            });
+        });
+        document.addEventListener('keydown', function (ev) {
+            if (ev.key === 'ArrowLeft') { show(idx - 1, -1); }
+            else if (ev.key === 'ArrowRight') { show(idx + 1, 1); }
+        });
+
+        show(0, 1);
     })();
 </script>
 {% endblock %}
