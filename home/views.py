@@ -148,9 +148,45 @@ def map_view(request):
     agencies = AgencyProfile.objects.all()
     return render(request, 'home/map.html', {'agencies': agencies})
 
+def _enrich_news(article):
+    """Derive a byline (author) and a section 'kicker' from each article so
+    the news page can be laid out like a real newsroom front."""
+    import re
+    from urllib.parse import urlparse
+
+    summary = (article.summary or '').strip()
+    author = re.split(r'\b(?:published|last updated|updated)\b', summary, maxsplit=1, flags=re.I)[0]
+    author = author.strip(' -–·|')
+    if not author or len(author) > 40:
+        author = 'Space.com'
+
+    parts = [p for p in urlparse(article.link or '').path.split('/') if p]
+    if len(parts) >= 2:
+        category = parts[0].replace('-', ' ').title()
+    else:
+        category = 'Space'
+    if len(category) > 24:
+        category = 'Space'
+
+    palette = ['var(--accent)', 'var(--terra)', 'var(--teal)']
+    color = palette[sum(ord(c) for c in category) % len(palette)]
+
+    article.byline = author
+    article.kicker = category
+    article.kicker_color = color
+    return article
+
+
 def news_list(request):
-    news_articles = NewsArticle.objects.all().order_by('-published_date')
-    return render(request, 'home/news_list.html', {'news_articles': news_articles})
+    from django.utils import timezone
+    articles = [_enrich_news(a) for a in NewsArticle.objects.all().order_by('-published_date')]
+    return render(request, 'home/news_list.html', {
+        'lead': articles[0] if articles else None,
+        'secondary': articles[1:5],
+        'latest': articles[5:16],
+        'total': len(articles),
+        'today': timezone.localdate(),
+    })
 
 def missions_list(request):
     missions = Mission.objects.all().order_by('-date')
