@@ -113,6 +113,20 @@ def dashboard(request):
         for a in agencies
     ]
 
+    # --- Geo data for the "Space Agencies" map tab ---
+    from django.urls import reverse
+    agencies_geo = []
+    for a in AgencyProfile.objects.all():
+        try:
+            flag = a.flag.url
+        except Exception:
+            flag = ''
+        agencies_geo.append({
+            'name': a.agency_name, 'country': a.country_name,
+            'lat': a.latitude, 'lng': a.longitude, 'flag': flag,
+            'url': reverse('agency_detail', args=[a.pk]),
+        })
+
     return render(request, 'home/dashboard.html', {
         'num_agencies': len(agencies),
         'total_budget_b': round(total_budget / 1000, 1),   # → billions
@@ -120,6 +134,7 @@ def dashboard(request):
         'regions': regions,
         'agency_data': agency_data,
         'region_data': region_data,
+        'agencies_geo': agencies_geo,
     })
 
 
