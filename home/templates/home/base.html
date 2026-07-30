@@ -362,6 +362,7 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'news_list' %}">News</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'missions_list' %}">Missions</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'forum_home' %}">Forum</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
                     <li class="nav-item">
                         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
                     </li>
@@ -378,7 +379,7 @@
     <footer class="site-footer">
         <div class="foot-brand">Race2Space</div>
         <p>Celebrating the rise of developing nations in space.</p>
-        <p><a href="https://jeromebustarga.com" target="_blank" rel="noopener">jeromebustarga.com</a></p>
+        <p><a href="{% url 'about' %}">About this project</a> · <a href="https://jeromebustarga.com" target="_blank" rel="noopener">jeromebustarga.com</a></p>
         <p>&copy; Jerome Bustarga {% now "Y" %}</p>
     </footer>
 

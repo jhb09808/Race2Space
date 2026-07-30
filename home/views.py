@@ -272,6 +272,10 @@ def missions_list(request):
     missions = Mission.objects.all().order_by('-date')
     return render(request, 'home/missions_list.html', {'missions': missions})
 
+def about(request):
+    return render(request, 'home/about.html')
+
+
 def google_site_verification(request):
     # Serves the Google Search Console HTML-file verification token.
     from django.http import HttpResponse
@@ -293,7 +297,7 @@ def sitemap_xml(request):
     from django.urls import reverse
     from django.utils import timezone
 
-    static_pages = ['home', 'dashboard', 'agency_list', 'timeline_view',
+    static_pages = ['home', 'about', 'dashboard', 'agency_list', 'timeline_view',
                     'map_view', 'news_list', 'missions_list', 'forum_home']
     today = timezone.now().date().isoformat()
 

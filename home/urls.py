@@ -7,6 +7,7 @@ urlpatterns = [
     path('robots.txt', views.robots_txt, name='robots_txt'),
     path('sitemap.xml', views.sitemap_xml, name='sitemap_xml'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('about/', views.about, name='about'),
     path('agencies/', views.agency_list, name='agency_list'),
     path('agencies/<int:pk>/', views.agency_detail, name='agency_detail'),
     path('forum/', views.forum_home, name='forum_home'),
