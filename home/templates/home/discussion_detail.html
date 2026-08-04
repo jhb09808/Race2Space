@@ -60,7 +60,8 @@
     .thread { max-width: 720px; margin: 0 auto; }
     .back-link { display: inline-block; margin-bottom: 1rem; font-size: 0.8rem; color: var(--accent); }
 
-    .post.op { display: grid; grid-template-columns: 46px 1fr; overflow: hidden; margin-bottom: 1.1rem; }
+    .post.op { display: grid; grid-template-columns: 46px minmax(0, 1fr); overflow: hidden; margin-bottom: 1.1rem; }
+    .op-title, .op-message { overflow-wrap: anywhere; }
     .op .op-title { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0.5rem 0 0.6rem; }
     .op .op-message { color: var(--text); white-space: pre-wrap; }
 
@@ -71,7 +72,8 @@
     .compose-row input { flex: 1; }
 
     .comments-head { font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--line); }
-    .comment { display: grid; grid-template-columns: 34px 1fr; gap: 0.8rem; padding: 0.6rem 0 1rem; position: relative; }
+    .comment { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0.8rem; padding: 0.6rem 0 1rem; position: relative; }
+    .comment-body > p { overflow-wrap: anywhere; }
     .comment::before { content: ''; position: absolute; left: 16px; top: 40px; bottom: 4px; width: 2px; background: var(--line); }
     .avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 0.85rem; flex: 0 0 auto; }
     .avatar.sm { width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; color: #fff; font-size: 0.62rem; }
