@@ -2,33 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Count
 from .models import AgencyProfile, Discussion, NewsArticle, Mission, TimelineEvent, SpaceObject
 from .forms import DiscussionForm, ReplyForm
-import matplotlib.pyplot as plt
-import seaborn as sns
-import io
-import base64
-import pandas as pd  # Ensure this import is included
-from matplotlib.ticker import FuncFormatter
-
-def create_graph(data, title, xlabel, ylabel, yformat):
-    buffer = io.BytesIO()
-    plt.figure(figsize=(12, 8))  # Increase figure size for better spacing
-    sns.barplot(x=data.columns[0], y=data.columns[1], data=data, palette='coolwarm')
-    plt.xticks(rotation=45, ha='right', fontsize=8)  # Rotate and adjust x-axis labels
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel, labelpad=40)  # Further increase padding for the y-axis label
-    plt.title(title)
-    plt.tight_layout(rect=[0.1, 0.1, 0.95, 0.95])  # Adjust layout to prevent clipping
-
-    # Apply y-axis formatter if specified
-    if yformat:
-        plt.gca().yaxis.set_major_formatter(yformat)
-
-    # Save the plot to a buffer
-    plt.savefig(buffer, format='png', bbox_inches='tight')  # Use tight bounding box to include all elements
-    buffer.seek(0)
-    image_png = buffer.getvalue()
-    buffer.close()
-    return base64.b64encode(image_png).decode('utf-8')
 
 
 

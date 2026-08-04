@@ -1,33 +1,109 @@
-# Race2Space
+# 🛰️ Race2Space
 
-**Race2Space** is a dedicated platform highlighting the remarkable achievements and ambitions of developing countries in space exploration. Our mission is to showcase the innovative efforts and successes of these nations as they reach for the stars.
+**Tracking the rise of developing nations in space.**
 
-## Features
+Race2Space is a full-stack Django web platform that documents and celebrates the space programs of the Global South — the agencies, missions and milestones of countries too often left out of the story of space exploration. It combines **live orbital data**, **interactive visualizations** and original content into a single, cohesive product.
 
-- **In-Depth Articles**: Detailed articles on space missions and projects.
-- **Country Profiles**: Information on the space programs of various developing countries.
-- **Latest News**: Updates on recent developments in space exploration.
-- **Interactive Maps**: Visual representations of space missions and achievements.
+🔗 **Live site:** [race2space.pythonanywhere.com](https://race2space.pythonanywhere.com)
 
-## Getting Started
+![Race2Space home page](docs/screenshots/home.jpg)
 
-To explore the achievements and ambitions of developing countries in space exploration, visit our website: <a href="http://race2space.pythonanywhere.com/">Race2Space</a>
+---
 
-## How to Use
+## ✨ Features
 
-1. **Browse Articles**: Read in-depth articles about space missions and projects.
-2. **Explore Country Profiles**: Learn about the space programs of different countries.
-3. **Stay Updated**: Follow the latest news and updates in space exploration.
-4. **Interact with Maps**: Use interactive maps to visualize space missions and achievements.
+- 🛰️ **Live mission-control dashboard** — real-time tracking of the ISS, Tiangong and Hubble on a control-room map, a live launch schedule with countdowns, and a running "humans in space" count.
+- 📊 **Interactive data visualization** — government space-budget comparisons across 34 agencies, filterable by region (Chart.js).
+- 🌍 **Interactive world maps** — space agencies and live satellites, built with Leaflet.
+- 🕹️ **Custom interactive timeline** — a hand-built journey through the milestones that carried developing nations into orbit.
+- 📰 **Live newsroom** — a self-updating space-news feed.
+- 💬 **Community forum** — a Reddit-style discussion board.
+- 🎨 **Bespoke design system** — a fully custom, responsive UI with light/dark themes; no off-the-shelf template.
+- 🔍 **Production-ready** — SEO (sitemap, structured data, Open Graph), secure settings, and continuous deployment.
 
-## Contributing
+---
 
-We welcome contributions from the global community! If you have suggestions or would like to contribute, please reach out to us.
+## 🖼️ Screenshots
 
-## License
+| Agency profiles | Interactive timeline |
+| --- | --- |
+| ![Agencies](docs/screenshots/agencies.jpg) | ![Timeline](docs/screenshots/timeline.jpg) |
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+| Community forum | About |
+| --- | --- |
+| ![Forum](docs/screenshots/forum.jpg) | ![About](docs/screenshots/about.jpg) |
 
-## Contact
+<p align="center">
+  <img src="docs/screenshots/mobile.jpg" width="300" alt="Responsive mobile layout">
+  <br><em>Fully responsive — from 320px phones to widescreen monitors.</em>
+</p>
 
-For any questions or support, please contact us at jhb09808@creighton.edu.
+---
+
+## 🛠️ Tech stack
+
+| Layer | Technologies |
+| --- | --- |
+| **Backend** | Python, Django |
+| **Frontend** | JavaScript (vanilla), HTML, CSS, Chart.js, Leaflet |
+| **Database** | SQLite |
+| **Live data** | [Spaceflight News API](https://spaceflightnewsapi.net/), [The Space Devs — Launch Library 2](https://thespacedevs.com/), [WhereTheISS.at](https://wheretheiss.at/) |
+| **Deployment** | PythonAnywhere |
+
+All live data is fetched **client-side**, so the app works without any server-side outbound access.
+
+---
+
+## 🚀 Running locally
+
+```bash
+# 1. Clone
+git clone https://github.com/jhb09808/Race2Space.git
+cd Race2Space
+
+# 2. Create a virtual environment
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Apply migrations
+python manage.py migrate
+
+# 5. Run
+python manage.py runserver
+```
+
+Then open <http://127.0.0.1:8000>.
+
+> For local development, enable debug mode: set the environment variable `DJANGO_DEBUG=True`.
+> In production, `DEBUG` defaults to `False` and the secret key is read from `DJANGO_SECRET_KEY`.
+
+---
+
+## 📁 Project structure
+
+```
+race2space/          # Django project settings & root URLs
+home/                # Main app
+├── models.py        # AgencyProfile, Discussion, NewsArticle, Mission, ...
+├── views.py         # Page views, sitemap, robots.txt
+├── space_data.py    # Curated world-agency dataset & history timeline
+├── templates/home/  # All page templates + the design system (base.html)
+└── static/ , media/ # Logo, backgrounds, country flags
+```
+
+---
+
+## 📊 About the data
+
+Data is compiled from public sources — the UN Office for Outer Space Affairs (UNOOSA), national space-agency publications, and open data feeds for live launches and orbital tracking. Budget figures are indicative annual estimates, not audited accounts, and some (such as China's) are best-available approximations.
+
+---
+
+## 👤 Author
+
+**Jerome Bustarga** — [jeromebustarga.com](https://jeromebustarga.com)
+
+Built as an independent project exploring full-stack development, live data integration and data visualization. Licensed under the MIT License.
