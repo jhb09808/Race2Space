@@ -10,6 +10,10 @@
 <!-- HERO -->
 <header class="hero dark">
   <canvas data-stars class="hero-stars"></canvas>
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="{% static 'home/video/hero.mp4' %}" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
   <div class="hero-mid"><p class="mono">Race2Space is a live index of the world's space agencies — tracking the rise of developing nations beyond Earth.</p></div>
   <div class="hero-lower">
     <div class="hero-row"><span class="mono-label" style="color:var(--white-soft)">Global South &middot; Orbit</span><span class="mono-label" style="color:var(--white-soft)">Est. 2024</span></div>
@@ -60,14 +64,13 @@
 <!-- FULL-VIEWPORT VIDEO -->
 <section class="videosec dark">
   <canvas data-stars class="vid-stars"></canvas>
-  <video autoplay muted loop playsinline poster="">
-    <!-- Background video goes here -->
-    <source src="" type="video/mp4">
+  <video autoplay muted loop playsinline>
+    <source src="{% static 'home/video/feature.mp4' %}" type="video/mp4">
   </video>
-  <span class="video-tag mono">[ Video background &middot; drop file here ]</span>
+  <div class="video-overlay"></div>
   <div class="video-center reveal">
     <div class="disp vw">REACHING<br><span class="orange">BEYOND EARTH</span></div>
-    <div class="mono-label" style="color:var(--white-mute);margin-top:1.2rem">Your full-screen video goes here</div>
+    <div class="mono-label" style="color:var(--white-mute);margin-top:1.2rem">Developing nations, one frontier</div>
   </div>
   <span class="scrollcue mono">&#9662; Scroll</span>
 </section>
@@ -118,6 +121,8 @@
 <style>
   .hero{position:relative;min-height:92vh;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;padding:clamp(1.5rem,4vw,3rem)}
   .hero-stars{position:absolute;inset:0;z-index:0}
+  .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(11,11,12,.55) 0%,rgba(11,11,12,.35) 45%,rgba(11,11,12,.85) 100%)}
   .hero-mid,.hero-lower{position:relative;z-index:2;max-width:var(--wrap);margin:0 auto;width:100%}
   .hero-mid{padding-top:2.5rem}
   .hero-mid p{max-width:44ch;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;color:var(--white-soft);line-height:1.9}
@@ -153,7 +158,7 @@
   .videosec{position:relative;height:100vh;min-height:520px;overflow:hidden;display:grid;place-items:center;padding:0;background:#050507}
   .videosec video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
   .vid-stars{position:absolute;inset:0;z-index:0}
-  .video-tag{position:absolute;top:1.3rem;left:1.3rem;z-index:3;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--white-mute);border:1px dashed #44444c;padding:.4rem .7rem}
+  .video-overlay{position:absolute;inset:0;z-index:2;background:rgba(5,5,7,.45)}
   .video-center{position:relative;z-index:3;text-align:center;padding:1rem}
   .vw{font-size:clamp(2.4rem,9vw,7rem);color:#fff;line-height:.9}
   .scrollcue{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:3;font-size:.64rem;letter-spacing:.2em;color:var(--white-mute)}

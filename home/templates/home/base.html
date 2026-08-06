@@ -57,6 +57,7 @@
 html,body{max-width:100%;overflow-x:hidden}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh}
 img,svg,video,canvas,iframe{max-width:100%}
+canvas[data-stars]{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 h1,h2,h3,h4,h5,h6{overflow-wrap:break-word}
 a{color:var(--orange-deep);text-decoration:none}
 a:hover{color:var(--ink)}
@@ -224,16 +225,16 @@ footer.site-footer a{color:var(--orange)}
             e.target.querySelectorAll&&e.target.querySelectorAll('[data-count]').forEach(window.r2sCountUp);
             io.unobserve(e.target);}});},{threshold:.2}):null;
         function watch(el){if(io)io.observe(el);else{el.classList.add('in');if(el.hasAttribute('data-count'))window.r2sCountUp(el);}}
-        document.querySelectorAll('.reveal,[data-count]').forEach(watch);
+        document.querySelectorAll('.reveal,[data-count],.cards').forEach(watch);
         // starfield helper (pages add <canvas data-stars>)
-        window.r2sStarfield=function(c){var x=c.getContext('2d');function size(){c.width=c.offsetWidth;c.height=c.offsetHeight;}size();
-            var s=[];for(var i=0;i<160;i++)s.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.2,a:Math.random()});
-            function draw(){x.clearRect(0,0,c.width,c.height);x.strokeStyle='rgba(242,137,74,0.12)';x.lineWidth=1.5;x.beginPath();
-                x.ellipse(c.width*0.7,c.height*0.5,c.width*0.28,c.height*0.42,0,0,Math.PI*2);x.stroke();
-                for(var i=0;i<s.length;i++){var q=s[i];x.globalAlpha=.3+.7*Math.abs(Math.sin(q.a));x.fillStyle='#fff';x.fillRect(q.x*c.width,q.y*c.height,q.r,q.r);q.a+=.01;}
+        window.r2sStarfield=function(c){var x=c.getContext('2d');function size(){c.width=c.offsetWidth||c.parentElement.offsetWidth;c.height=c.offsetHeight||c.parentElement.offsetHeight;}size();
+            var s=[];for(var i=0;i<200;i++)s.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.2,a:Math.random()});
+            function draw(){x.clearRect(0,0,c.width,c.height);
+                for(var i=0;i<s.length;i++){var q=s[i];x.globalAlpha=.25+.6*Math.abs(Math.sin(q.a));x.fillStyle='#fff';x.fillRect(q.x*c.width,q.y*c.height,q.r,q.r);q.a+=.008;}
                 x.globalAlpha=1;requestAnimationFrame(draw);}
-            if(!RM)draw();else{for(var i=0;i<s.length;i++){var q=s[i];x.fillStyle='#fff';x.fillRect(q.x*c.width,q.y*c.height,q.r,q.r);}}
-            window.addEventListener('resize',size);};
+            if(!RM)draw();else{for(var i=0;i<s.length;i++){var q=s[i];x.globalAlpha=.5;x.fillStyle='#fff';x.fillRect(q.x*c.width,q.y*c.height,q.r,q.r);}}
+            window.addEventListener('resize',function(){size();});
+            window.addEventListener('load',function(){size();});};
         document.querySelectorAll('canvas[data-stars]').forEach(window.r2sStarfield);
     })();
     </script>
