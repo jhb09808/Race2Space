@@ -73,9 +73,12 @@ h4,h5,h6{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em}
 .dark a{color:var(--orange)}
 
 /* reveal on scroll */
-.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);transition-delay:var(--rd,0ms);will-change:opacity,transform}
 .reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+/* whole-section slide-up as it scrolls into view */
+.sect-up{opacity:0;transform:translateY(52px);transition:opacity .85s cubic-bezier(.22,.72,.18,1),transform .85s cubic-bezier(.22,.72,.18,1)}
+.sect-up.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal,.sect-up{opacity:1;transform:none;transition:none}}
 
 /* buttons */
 .btn{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;font-size:.74rem;font-weight:600;
@@ -218,14 +221,21 @@ footer.site-footer a{color:var(--orange)}
             var dur=1300,st=null;function step(ts){if(!st)st=ts;var p=Math.min((ts-st)/dur,1),e=1-Math.pow(1-p,3);
                 el.textContent=(v*e).toFixed(dec)+suf;if(p<1)requestAnimationFrame(step);else el.textContent=v.toFixed(dec)+suf;}
             requestAnimationFrame(step);};
-        // reveal + counters
-        var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){
-            e.target.classList.add('in');
-            if(e.target.hasAttribute('data-count'))window.r2sCountUp(e.target);
-            e.target.querySelectorAll&&e.target.querySelectorAll('[data-count]').forEach(window.r2sCountUp);
-            io.unobserve(e.target);}});},{threshold:.2}):null;
-        function watch(el){if(io)io.observe(el);else{el.classList.add('in');if(el.hasAttribute('data-count'))window.r2sCountUp(el);}}
-        document.querySelectorAll('.reveal,[data-count],.cards').forEach(watch);
+        // reveal + counters — section-driven cascade
+        function fire(t){t.classList.add('in');
+            if(t.hasAttribute('data-count'))window.r2sCountUp(t);
+            if(t.querySelectorAll){t.querySelectorAll('.reveal,.cards').forEach(function(el){el.classList.add('in');});t.querySelectorAll('[data-count]').forEach(window.r2sCountUp);}}
+        var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;fire(e.target);io.unobserve(e.target);});},{threshold:.12,rootMargin:'0px 0px -7% 0px'}):null;
+        function watch(el){if(io)io.observe(el);else fire(el);}
+        // auto-tag: cascade grid/list children, slide each section up
+        var STAG='.stats,.flags,.ms-list,.acc,.idx-table tbody,.tl-legend,.news-grid,.forum-list';
+        document.querySelectorAll(STAG).forEach(function(c){var n=0;[].forEach.call(c.children,function(k){if(k.tagName==='THEAD')return;k.classList.add('reveal');k.style.setProperty('--rd',Math.min(n,9)*70+'ms');n++;});});
+        document.querySelectorAll('section:not(.hero)').forEach(function(sec){sec.classList.add('sect-up');
+            var inner=sec.querySelector('.section-inner');if(!inner)return;var d=0;
+            [].forEach.call(inner.children,function(k){if(k.matches&&(k.matches(STAG)||k.classList.contains('cards')))return;k.classList.add('reveal');k.style.setProperty('--rd',d+'ms');d+=110;});});
+        // observe sections; plus any reveal/count not inside a slid section
+        document.querySelectorAll('.sect-up').forEach(watch);
+        document.querySelectorAll('.reveal,[data-count],.cards').forEach(function(el){if(!el.closest('.sect-up'))watch(el);});
         // starfield helper (pages add <canvas data-stars>)
         window.r2sStarfield=function(c){var x=c.getContext('2d');function size(){c.width=c.offsetWidth||c.parentElement.offsetWidth;c.height=c.offsetHeight||c.parentElement.offsetHeight;}size();
             var s=[];for(var i=0;i<200;i++)s.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.2,a:Math.random()});
