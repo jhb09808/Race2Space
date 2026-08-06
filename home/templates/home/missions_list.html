@@ -1,37 +1,122 @@
 {% extends 'home/base.html' %}
+{% load static %}
 
-{% block title %}Missions — Race2Space{% endblock %}
-{% block meta_description %}The latest space missions across the developing world and beyond — launches, payloads and milestones.{% endblock %}
+{% block title %}Missions — Live Launch Manifest — Race2Space{% endblock %}
+{% block meta_description %}A live manifest of recent and upcoming orbital launches worldwide — rockets, providers, launch sites and countdowns, updated automatically.{% endblock %}
 
 {% block content %}
 <section class="paper">
   <div class="section-inner">
-    <span class="eyebrow">Around the world</span>
-    <h1 class="ms-h">Missions</h1>
-    <div class="ms-list">
-      {% for mission in missions %}
-      <article class="ms-item reveal">
-        <div class="ms-date mono">{% if mission.date %}{{ mission.date|date:"Y·m·d" }}{% else %}—{% endif %}</div>
-        <div class="ms-main">
-          <h3 class="ms-title">{{ mission.title }}</h3>
-          <p class="ms-sum">{{ mission.summary }}</p>
-          <a class="btn" href="{{ mission.link }}" target="_blank" rel="noopener">Read more</a>
-        </div>
-      </article>
-      {% empty %}
-      <p class="text-muted mono">No missions recorded yet.</p>
-      {% endfor %}
+    <header class="ms-head">
+      <div>
+        <span class="eyebrow">Live feed &middot; updates automatically</span>
+        <h1 class="ms-h">Missions</h1>
+      </div>
+      <span class="mono-label">Global launch manifest</span>
+    </header>
+    <p class="ms-intro mono">Recent and upcoming orbital launches from across the world, pulled live from the Launch Library. Countdowns and dates are shown in your local time.</p>
+
+    <div class="ms-block">
+      <div class="ms-subhead"><h2>Upcoming</h2><span class="mono-label" id="upMeta"></span></div>
+      <div id="msUpcoming" class="ms-list"><p class="ms-load mono">Loading upcoming launches…</p></div>
+    </div>
+
+    <div class="ms-block">
+      <div class="ms-subhead"><h2>Recently flown</h2><span class="mono-label" id="pvMeta"></span></div>
+      <div id="msPrevious" class="ms-list"><p class="ms-load mono">Loading recent launches…</p></div>
     </div>
   </div>
 </section>
 
 <style>
-  .ms-h{font-size:clamp(2.6rem,7vw,5rem);margin-bottom:2rem}
-  .ms-list{border-top:1px solid var(--ink)}
-  .ms-item{display:grid;grid-template-columns:120px 1fr;gap:1.5rem;padding:1.8rem 0;border-bottom:1px solid var(--line)}
-  @media(max-width:600px){.ms-item{grid-template-columns:1fr;gap:.6rem}}
-  .ms-date{font-size:.72rem;letter-spacing:.06em;color:var(--orange-deep);padding-top:.4rem}
-  .ms-title{font-size:1.5rem;margin-bottom:.6rem}
-  .ms-sum{color:var(--ink-soft);max-width:66ch;margin-bottom:1rem}
+  .ms-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.5rem;flex-wrap:wrap}
+  .ms-h{font-size:clamp(2.6rem,7vw,5rem)}
+  .ms-intro{max-width:70ch;margin:1.2rem 0 0;text-transform:uppercase;font-size:.72rem;letter-spacing:.04em;color:var(--paper-mute);line-height:1.9}
+  .ms-block{margin-top:clamp(2.4rem,6vw,4rem)}
+  .ms-subhead{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-bottom:3px solid var(--ink);padding-bottom:.7rem;margin-bottom:.4rem}
+  .ms-subhead h2{font-size:clamp(1.6rem,4vw,2.6rem)}
+  .ms-load{color:var(--paper-mute);padding:2.2rem 0}
+  .ms-item{display:grid;grid-template-columns:130px 1fr auto;gap:1.4rem;padding:1.5rem 0;border-bottom:1px solid var(--line);align-items:start;
+    animation:msIn .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0ms)}
+  @keyframes msIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.ms-item{animation:none}}
+  .ms-thumb{width:130px;height:82px;object-fit:cover;border:1px solid var(--line);background:var(--paper-2);display:block}
+  .ms-when{font-family:var(--mono);font-size:.72rem;color:var(--orange-deep);letter-spacing:.04em;margin-top:.5rem;font-variant-numeric:tabular-nums}
+  .ms-title{font-size:1.35rem;line-height:1.05;margin-bottom:.5rem}
+  .ms-meta{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);line-height:1.8}
+  .ms-meta b{color:var(--ink);font-weight:600}
+  .ms-pill{display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;margin-top:.7rem}
+  .ms-right{text-align:right;white-space:nowrap}
+  .ms-date{font-family:var(--mono);font-size:.72rem;color:var(--paper-mute);text-transform:uppercase;letter-spacing:.05em}
+  .ms-link{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--orange-deep);display:inline-block;margin-top:.6rem}
+  @media(max-width:680px){
+    .ms-item{grid-template-columns:1fr;gap:.6rem}
+    .ms-thumb{width:100%;height:170px}
+    .ms-right{text-align:left}
+  }
 </style>
+
+{% verbatim %}
+<script>
+(function(){
+  var LL='https://ll.thespacedevs.com/2.2.0';
+  function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
+  function fdate(iso){try{return new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});}catch(e){return'TBD';}}
+  function ftime(iso){try{return new Date(iso).toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});}catch(e){return'';}}
+  function countdown(iso){var diff=(new Date(iso)-new Date())/1000;if(isNaN(diff))return'TBD';
+    if(diff<=0)return'LIVE / IN FLIGHT';
+    var d=Math.floor(diff/86400),h=Math.floor((diff%86400)/3600),m=Math.floor((diff%3600)/60),s=Math.floor(diff%60);
+    return 'T- '+(d>0?d+'d ':'')+h+'h '+m+'m '+s+'s';}
+  function pillColor(ab){switch(ab){
+    case 'Go':case 'TBC':return '#C4622D';
+    case 'Success':return '#2E7D66';
+    case 'Failure':case 'Partial Failure':return '#B33A2B';
+    case 'In Flight':case 'Hold':return '#C08A1E';
+    default:return '#8A8577';}}
+  function field(l){
+    var prov=(l.launch_service_provider&&l.launch_service_provider.name)||'';
+    var rocket=(l.rocket&&l.rocket.configuration&&(l.rocket.configuration.full_name||l.rocket.configuration.name))||'';
+    var pad=(l.pad&&l.pad.name)||'';
+    var loc=(l.pad&&l.pad.location&&l.pad.location.name)||'';
+    var site=[pad&&pad!==loc?pad:'',loc].filter(Boolean).join(', ')||loc;
+    var st=(l.status&&(l.status.abbrev||l.status.name))||'';
+    return {prov:prov,rocket:rocket,site:site,status:st,img:l.image||''};
+  }
+  function itemHtml(l,i,upcoming){
+    var f=field(l);
+    var thumb=f.img?'<img class="ms-thumb" src="'+esc(f.img)+'" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">':'<span class="ms-thumb"></span>';
+    var meta='<div class="ms-meta">'+
+        (f.rocket?'<b>'+esc(f.rocket)+'</b><br>':'')+
+        (f.prov?esc(f.prov)+'<br>':'')+
+        (f.site?'▸ '+esc(f.site):'')+'</div>';
+    var pill=f.status?'<span class="ms-pill" style="color:'+pillColor(f.status)+'">'+esc(f.status)+'</span>':'';
+    var when=upcoming
+      ? '<div class="ms-when js-cd" data-net="'+esc(l.net)+'">'+esc(countdown(l.net))+'</div>'
+      : '<div class="ms-when">'+esc(ftime(l.net))+'</div>';
+    var left='<div><div class="ms-date">'+esc(fdate(l.net))+'</div>'+when+'</div>';
+    var right='<div class="ms-right"><div class="ms-date">'+(upcoming?'Scheduled':'Flown')+'</div>'+
+      (l.id?'<a class="ms-link" href="https://nextspaceflight.com/launches/details/'+encodeURIComponent(l.id)+'" target="_blank" rel="noopener">Details ▸</a>':'')+'</div>';
+    return '<article class="ms-item" style="--d:'+Math.min(i,10)*70+'ms">'+left+
+      '<div>'+thumb+'<h3 class="ms-title">'+esc(l.name||'Launch')+'</h3>'+meta+pill+'</div>'+right+'</article>';
+  }
+  function render(el,list,upcoming,metaEl){
+    if(!list.length){el.innerHTML='<p class="ms-load mono">No launches listed right now.</p>';return;}
+    el.innerHTML=list.map(function(l,i){return itemHtml(l,i,upcoming);}).join('');
+    if(metaEl)metaEl.textContent=list.length+(upcoming?' scheduled':' recent');
+  }
+  function tickCountdowns(){document.querySelectorAll('.js-cd').forEach(function(el){el.textContent=countdown(el.getAttribute('data-net'));});}
+
+  fetch(LL+'/launch/upcoming/?limit=10&hide_recent_previous=true')
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){render(document.getElementById('msUpcoming'),j.results||[],true,document.getElementById('upMeta'));
+      tickCountdowns();setInterval(tickCountdowns,1000);})
+    .catch(function(){document.getElementById('msUpcoming').innerHTML='<p class="ms-load mono">Live launch feed is busy (rate-limited) — refresh in a minute.</p>';});
+
+  fetch(LL+'/launch/previous/?limit=10')
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){render(document.getElementById('msPrevious'),j.results||[],false,document.getElementById('pvMeta'));})
+    .catch(function(){document.getElementById('msPrevious').innerHTML='<p class="ms-load mono">Live launch feed is busy (rate-limited) — refresh in a minute.</p>';});
+})();
+</script>
+{% endverbatim %}
 {% endblock %}
