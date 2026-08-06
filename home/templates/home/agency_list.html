@@ -2,59 +2,48 @@
 {% load static %}
 
 {% block title %}Space Agencies of Developing Countries — Race2Space{% endblock %}
-{% block meta_description %}A directory of 21 developing-country space agencies — Algeria (ASAL), Argentina (CONAE), Brazil (AEB), Egypt (EgSA), India (ISRO), Kenya (KENSA), Pakistan (SUPARCO), South Africa (SANSA), Türkiye and more — with missions, history and official websites.{% endblock %}
-{% block social_title %}Space Agencies of Developing Nations — Race2Space{% endblock %}
+{% block meta_description %}A directory of 21 developing-country space agencies — Algeria (ASAL), Argentina (CONAE), Brazil (AEB), Egypt (EgSA), India (ISRO), Kenya (KENSA), Pakistan (SUPARCO), South Africa (SANSA) and more.{% endblock %}
 
 {% block content %}
-<div class="agencies-intro">
-    <p class="eyebrow">Country profiles</p>
-    <h1 class="section-title">Space Agencies of Developing Countries</h1>
-    <p>The countries below are recognised as developing by the United Nations. Race2Space showcases their national space agencies — members of the UN Office for Outer Space Affairs (UNOOSA) — and the transformative power of space technology to drive sustainable development.</p>
-    <p>Explore 21 space programs across Africa, Asia, the Middle East and Latin America — from India's ISRO and Brazil's AEB to Kenya's KENSA, Egypt's EgSA and the Philippine Space Agency. Each profile covers the agency's history, notable missions, satellites launched, technological innovations and a link to its official website.</p>
-</div>
+<section class="paper">
+  <div class="section-inner">
+    <span class="eyebrow">Country profiles</span>
+    <h1 class="idx-h">Agency Index</h1>
+    <p class="idx-sub mono">21 developing-country space agencies — members of the UN Office for Outer Space Affairs (UNOOSA). Select a row for the full profile.</p>
 
-<div class="agency-grid">
-    {% for profile in profiles|dictsort:"country_name" %}
-    <div class="agency-card card">
-        <a class="agency-main" href="{% url 'agency_detail' profile.pk %}">
-            <div class="agency-flag">
-                <img src="{{ profile.flag.url }}" alt="{{ profile.country_name }} flag">
-            </div>
-            <div class="agency-info">
-                <h5>{{ profile.country_name }}</h5>
-                <p>{{ profile.agency_name }}</p>
-            </div>
-        </a>
-        {% if profile.website %}
-        <a class="agency-site mono" href="{{ profile.website }}" target="_blank" rel="noopener">Official site ↗</a>
-        {% endif %}
+    <div class="idx-table reveal">
+      <table>
+        <thead><tr><th style="width:44px">№</th><th style="width:56px">Flag</th><th>Country</th><th>Agency</th><th style="width:80px">Site</th></tr></thead>
+        <tbody>
+        {% for profile in profiles|dictsort:"country_name" %}
+          <tr onclick="location.href='{% url 'agency_detail' profile.pk %}'" style="cursor:pointer">
+            <td class="idx-n">{{ forloop.counter|stringformat:"02d" }}</td>
+            <td><img class="idx-flag" src="{{ profile.flag.url }}" alt="{{ profile.country_name }} flag"></td>
+            <td class="idx-country"><a href="{% url 'agency_detail' profile.pk %}">{{ profile.country_name }}</a></td>
+            <td class="idx-agency">{{ profile.agency_name }}</td>
+            <td>{% if profile.website %}<a href="{{ profile.website }}" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗</a>{% else %}—{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
     </div>
-    {% endfor %}
-</div>
+  </div>
+</section>
 
 <style>
-    .agencies-intro { max-width: 68ch; margin-bottom: 2.2rem; }
-    .agencies-intro .eyebrow { display: block; margin-bottom: 0.6rem; }
-    .agencies-intro p { color: var(--text-soft); }
-
-    .agency-grid {
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.2rem;
-    }
-    .agency-card { display: flex; flex-direction: column; }
-    .agency-main { display: flex; flex-direction: column; text-decoration: none; color: var(--text) !important; flex: 1; }
-    .agency-flag {
-        aspect-ratio: 3 / 2; overflow: hidden; background: var(--ground-2);
-        border-bottom: 1px solid var(--line);
-    }
-    .agency-flag img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
-    .agency-card:hover .agency-flag img { transform: scale(1.06); }
-    .agency-info { padding: 1rem 1.2rem 0.8rem; }
-    .agency-info h5 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 0.15rem; }
-    .agency-info p { color: var(--text-soft); font-size: 0.85rem; margin: 0; }
-    .agency-site {
-        display: block; padding: 0.7rem 1.2rem; border-top: 1px solid var(--line);
-        font-size: 0.72rem; letter-spacing: 0.04em; color: var(--teal); text-decoration: none; transition: color .2s, background .2s;
-    }
-    .agency-site:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .idx-h{font-size:clamp(2.4rem,6vw,4.5rem)}
+  .idx-sub{max-width:60ch;margin:1rem 0 2.4rem;text-transform:uppercase;font-size:.74rem;letter-spacing:.04em;color:var(--paper-mute);line-height:1.9}
+  .idx-table{border:1px solid var(--ink);overflow-x:auto}
+  .idx-table table{font-size:.86rem}
+  .idx-table th{background:var(--ink);color:var(--white);border-bottom:0;padding:.8rem}
+  .idx-table tbody tr{transition:background .12s}
+  .idx-table tbody tr:hover{background:var(--paper-2)}
+  .idx-table td{padding:.7rem .8rem;border-bottom:1px solid var(--line)}
+  .idx-n{color:var(--orange-deep);font-weight:600}
+  .idx-flag{width:38px;height:24px;object-fit:cover;border:1px solid var(--line);display:block}
+  .idx-country a{font-family:var(--disp);font-size:1.25rem;color:var(--ink);text-decoration:none}
+  .idx-country a:hover{color:var(--orange-deep)}
+  .idx-agency{color:var(--ink-soft)}
+  .idx-table td a[target]{font-size:1.1rem;color:var(--orange-deep)}
 </style>
 {% endblock %}

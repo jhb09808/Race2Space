@@ -1,36 +1,37 @@
 {% extends 'home/base.html' %}
-{% load static %}
 
 {% block title %}Missions — Race2Space{% endblock %}
+{% block meta_description %}The latest space missions across the developing world and beyond — launches, payloads and milestones.{% endblock %}
 
 {% block content %}
-<div class="missions-intro">
-    <p class="eyebrow">Around the world</p>
-    <h1 class="section-title">Latest Space Missions</h1>
-</div>
-
-<div class="missions-grid">
-    {% for mission in missions %}
-    <article class="card mission-card">
-        <div class="card-body">
-            {% if mission.date %}<p class="mission-date mono">{{ mission.date|date:"Y·m·d" }}</p>{% endif %}
-            <h3 class="card-title">{{ mission.title }}</h3>
-            <p class="mission-summary">{{ mission.summary }}</p>
-            <a href="{{ mission.link }}" target="_blank" rel="noopener" class="btn btn-outline">Read more</a>
+<section class="paper">
+  <div class="section-inner">
+    <span class="eyebrow">Around the world</span>
+    <h1 class="ms-h">Missions</h1>
+    <div class="ms-list">
+      {% for mission in missions %}
+      <article class="ms-item reveal">
+        <div class="ms-date mono">{% if mission.date %}{{ mission.date|date:"Y·m·d" }}{% else %}—{% endif %}</div>
+        <div class="ms-main">
+          <h3 class="ms-title">{{ mission.title }}</h3>
+          <p class="ms-sum">{{ mission.summary }}</p>
+          <a class="btn" href="{{ mission.link }}" target="_blank" rel="noopener">Read more</a>
         </div>
-    </article>
-    {% empty %}
-    <p class="text-muted">No missions recorded yet.</p>
-    {% endfor %}
-</div>
+      </article>
+      {% empty %}
+      <p class="text-muted mono">No missions recorded yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
 
 <style>
-    .missions-intro { margin-bottom: 2rem; }
-    .missions-intro .eyebrow { display: block; margin-bottom: 0.5rem; }
-    .missions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.3rem; }
-    .mission-card .card-body { display: flex; flex-direction: column; gap: 0.5rem; }
-    .mission-date { font-size: 0.75rem; color: var(--accent); }
-    .mission-summary { color: var(--text-soft); flex: 1; }
-    .mission-card .btn { align-self: flex-start; }
+  .ms-h{font-size:clamp(2.6rem,7vw,5rem);margin-bottom:2rem}
+  .ms-list{border-top:1px solid var(--ink)}
+  .ms-item{display:grid;grid-template-columns:120px 1fr;gap:1.5rem;padding:1.8rem 0;border-bottom:1px solid var(--line)}
+  @media(max-width:600px){.ms-item{grid-template-columns:1fr;gap:.6rem}}
+  .ms-date{font-size:.72rem;letter-spacing:.06em;color:var(--orange-deep);padding-top:.4rem}
+  .ms-title{font-size:1.5rem;margin-bottom:.6rem}
+  .ms-sum{color:var(--ink-soft);max-width:66ch;margin-bottom:1rem}
 </style>
 {% endblock %}

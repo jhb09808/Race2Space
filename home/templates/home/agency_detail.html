@@ -7,81 +7,63 @@
 {% block social_desc %}{{ profile.overview|truncatewords:24 }}{% endblock %}
 {% block structured_data %}
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "GovernmentOrganization",
-  "name": "{{ profile.agency_name|escapejs }}",
-  "areaServed": "{{ profile.country_name|escapejs }}",
-  {% if profile.website %}"url": "{{ profile.website }}",{% endif %}
-  "description": "{{ profile.overview|truncatewords:30|escapejs }}"
-}
+{ "@context":"https://schema.org","@type":"GovernmentOrganization","name":"{{ profile.agency_name|escapejs }}","areaServed":"{{ profile.country_name|escapejs }}",{% if profile.website %}"url":"{{ profile.website }}",{% endif %}"description":"{{ profile.overview|truncatewords:30|escapejs }}" }
 </script>
 {% endblock %}
 
 {% block content %}
-<article class="agency-detail">
-    <header class="detail-head">
-        <div class="detail-flag">
-            <img src="{{ profile.flag.url }}" alt="{{ profile.country_name }} flag">
-        </div>
-        <div>
-            <p class="eyebrow">{{ profile.country_name }}</p>
-            <h1>{{ profile.agency_name }}</h1>
-            {% if profile.website %}
-            <a class="agency-website btn btn-primary" href="{{ profile.website }}" target="_blank" rel="noopener">Visit official website ↗</a>
-            {% endif %}
-        </div>
+<section class="paper">
+  <div class="section-inner detail">
+    <a href="{% url 'agency_list' %}" class="back mono">&#9666; Agency Index</a>
+
+    <header class="d-head">
+      <img class="d-flag" src="{{ profile.flag.url }}" alt="{{ profile.country_name }} flag">
+      <div>
+        <span class="eyebrow">{{ profile.country_name }}</span>
+        <h1 class="d-title">{{ profile.agency_name }}</h1>
+        {% if profile.website %}<a class="btn btn-orange" href="{{ profile.website }}" target="_blank" rel="noopener">Official Website</a>{% endif %}
+      </div>
     </header>
 
-    <div class="detail-body">
-        <section><h3 class="section-title">Overview</h3><p>{{ profile.overview }}</p></section>
-        <section><h3 class="section-title">History</h3><p>{{ profile.history }}</p></section>
-        <section><h3 class="section-title">Notable Missions</h3><p>{{ profile.notable_missions }}</p></section>
-        <section><h3 class="section-title">Technological Innovations</h3><p>{{ profile.technological_innovations }}</p></section>
-        <section><h3 class="section-title">Collaborations</h3><p>{{ profile.collaborations }}</p></section>
-        <section><h3 class="section-title">Future Plans</h3><p>{{ profile.future_plans }}</p></section>
+    <div class="d-body">
+      <section class="d-sec reveal"><span class="mono-label">Overview</span><p>{{ profile.overview }}</p></section>
+      <section class="d-sec reveal"><span class="mono-label">History</span><p>{{ profile.history }}</p></section>
+      <section class="d-sec reveal"><span class="mono-label">Notable Missions</span><p>{{ profile.notable_missions }}</p></section>
+      <section class="d-sec reveal"><span class="mono-label">Technological Innovations</span><p>{{ profile.technological_innovations }}</p></section>
+      <section class="d-sec reveal"><span class="mono-label">Collaborations</span><p>{{ profile.collaborations }}</p></section>
+      <section class="d-sec reveal"><span class="mono-label">Future Plans</span><p>{{ profile.future_plans }}</p></section>
     </div>
 
-    <section class="objects-section">
-        <h3 class="section-title">Space Objects</h3>
-        <div class="table-wrap">
-            <table class="table table-striped">
-                <thead>
-                    <tr><th>Name</th><th>Date of Launch</th><th>Status</th><th>Function</th></tr>
-                </thead>
-                <tbody>
-                    {% for obj in space_objects %}
-                    <tr>
-                        <td>{{ obj.name_of_space_object }}</td>
-                        <td class="mono">{{ obj.date_of_launch|default:"—" }}</td>
-                        <td>{{ obj.status|default:"—" }}</td>
-                        <td>{{ obj.function_of_space_object|default:"—" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="4" class="text-muted">No registered space objects on record.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <section class="d-objs reveal">
+      <span class="mono-label">Registered Space Objects</span>
+      <div class="idx-table" style="border:1px solid var(--ink);overflow-x:auto;margin-top:1rem">
+        <table>
+          <thead><tr><th>Name</th><th>Launch</th><th>Status</th><th>Function</th></tr></thead>
+          <tbody>
+          {% for obj in space_objects %}
+            <tr><td>{{ obj.name_of_space_object }}</td><td class="mono">{{ obj.date_of_launch|default:"—" }}</td><td>{{ obj.status|default:"—" }}</td><td>{{ obj.function_of_space_object|default:"—" }}</td></tr>
+          {% empty %}
+            <tr><td colspan="4" class="text-muted">No registered space objects on record.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </section>
 
-    <div class="detail-actions">
-        <a class="btn btn-outline" href="{% url 'agency_list' %}">← Back to all agencies</a>
-    </div>
-</article>
+    <div style="margin-top:2.5rem"><a class="btn" href="{% url 'agency_list' %}">Back to Index</a></div>
+  </div>
+</section>
 
 <style>
-    .agency-detail { max-width: 900px; margin: 0 auto; }
-    .detail-head { display: flex; align-items: center; gap: 1.3rem; margin-bottom: 2rem; }
-    .detail-flag { width: 120px; flex: 0 0 auto; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 8px 20px -12px rgba(0,0,0,.5); }
-    .detail-flag img { width: 100%; height: auto; display: block; }
-    .detail-head h1 { margin: 0; }
-    .agency-website { display: inline-block; margin-top: 0.9rem; font-size: 0.76rem; }
-    .detail-body section { margin-bottom: 1.8rem; }
-    .detail-body p { color: var(--text-soft); }
-    .objects-section { margin-top: 2.5rem; }
-    .table-wrap { overflow-x: auto; }
-    .detail-actions { margin-top: 2.5rem; }
-    @media (max-width: 600px) { .detail-head { flex-direction: column; text-align: center; } .detail-flag { width: 100px; } }
+  .detail{max-width:920px}
+  .back{display:inline-block;margin-bottom:1.6rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange-deep)}
+  .d-head{display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;padding-bottom:2rem;border-bottom:1px solid var(--line)}
+  .d-flag{width:120px;height:80px;object-fit:cover;border:1px solid var(--ink)}
+  .d-title{font-size:clamp(1.8rem,4.5vw,3rem);margin:.3rem 0 1rem}
+  .d-sec{padding:1.6rem 0;border-bottom:1px solid var(--line)}
+  .d-sec .mono-label{display:block;margin-bottom:.8rem}
+  .d-sec p{color:var(--ink-soft);max-width:70ch}
+  .d-objs{margin-top:2rem}
+  @media(max-width:560px){.d-flag{width:90px;height:60px}}
 </style>
 {% endblock %}

@@ -2,109 +2,68 @@
 {% load static %}
 
 {% block title %}About Race2Space — Developing Nations in Space{% endblock %}
-{% block meta_description %}About Race2Space — a platform documenting how developing nations across the Global South are advancing in space, with agency profiles, live data, history and community.{% endblock %}
+{% block meta_description %}About Race2Space — a live index documenting how developing nations across the Global South are advancing in space, with agency profiles, live data, history and community.{% endblock %}
 
 {% block content %}
-<article class="about">
+<section class="dark ab-hero">
+  <canvas data-stars class="ab-stars"></canvas>
+  <div class="section-inner" style="position:relative;z-index:2">
+    <span class="eyebrow">About the project</span>
+    <h1 class="ab-title disp">A frontier that<br>belongs to <span class="orange">everyone.</span></h1>
+    <p class="ab-lead mono">Race2Space documents and celebrates the rise of developing nations in space — the agencies, missions and milestones of countries too often left out of the story of space exploration.</p>
+  </div>
+</section>
 
-    <!-- Hero -->
-    <header class="ab-hero">
-        <div class="ab-hero-copy">
-            <p class="eyebrow">About the project</p>
-            <h1>A frontier that belongs to everyone.</h1>
-            <p class="ab-lead">Race2Space documents and celebrates the rise of developing nations in space — the agencies, missions and milestones of countries too often left out of the story of space exploration.</p>
-        </div>
-        <div class="ab-hero-art" aria-hidden="true">
-            <svg viewBox="0 0 300 260" role="img" aria-label="A launch trajectory arc rising toward a satellite">
-                <line x1="15" y1="230" x2="285" y2="230" stroke="var(--line)" stroke-width="2"/>
-                <ellipse cx="150" cy="130" rx="120" ry="105" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 9"/>
-                <path class="traj-line traj-draw" d="M30 230 Q 95 30 260 80"/>
-                <circle cx="30" cy="230" r="5" fill="var(--terra)"/>
-                <g transform="translate(260 80)">
-                    <circle r="7" fill="var(--accent)"/>
-                    <circle r="13" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity="0.5"/>
-                </g>
-            </svg>
-        </div>
-    </header>
+<section class="paper">
+  <div class="section-inner ab-body">
+    <div class="ab-block reveal">
+      <span class="mono-label">01 / Why this exists</span>
+      <p>For most of the twentieth century, "the space race" meant two superpowers. That story is out of date. Today, more than thirty nations run space programs — and some of the most remarkable progress is coming from the <strong>Global South</strong>: from India landing near the Moon's south pole and the UAE reaching Mars, to Kenya, Egypt, Brazil, Indonesia and dozens of others building satellites and standing up national space agencies.</p>
+      <p>These programs rarely make headlines, yet their work is deeply practical — satellites that improve harvests, warn of floods, connect remote communities and monitor a changing climate. Race2Space brings that overlooked story together in one place.</p>
+    </div>
 
-    <!-- Mission -->
-    <section class="ab-block">
-        <h2 class="section-title">Why this exists</h2>
-        <p>For most of the twentieth century, "the space race" meant two superpowers. That story is out of date. Today, more than thirty nations run space programs — and some of the most remarkable progress is coming from the <strong>Global South</strong>: from India landing near the Moon's south pole and the UAE reaching Mars, to Kenya, Egypt, Brazil, Indonesia and dozens of others building satellites and standing up national space agencies.</p>
-        <p>These programs rarely make headlines, yet their work is deeply practical — satellites that improve harvests, warn of floods, connect remote communities and monitor a changing climate. Race2Space exists to bring that overlooked story together in one place, and to show that space is no longer the preserve of a wealthy few but a shared human frontier.</p>
-    </section>
+    <div class="ab-block reveal">
+      <span class="mono-label">02 / What you'll find</span>
+      <div class="ab-list">
+        <a href="{% url 'agency_list' %}"><b>Agency Profiles</b><span>21 developing-country space agencies — history, missions, official links.</span></a>
+        <a href="{% url 'dashboard' %}"><b>Live Dashboard</b><span>Real-time launches, satellites, and budget comparisons across 34 agencies.</span></a>
+        <a href="{% url 'timeline_view' %}"><b>History Timeline</b><span>The milestones that carried developing nations into orbit.</span></a>
+        <a href="{% url 'news_list' %}"><b>Live Newsroom</b><span>Current space &amp; astronomy headlines, updated continuously.</span></a>
+        <a href="{% url 'forum_home' %}"><b>Community Forum</b><span>Discuss launches, missions and the future of the Global South in orbit.</span></a>
+      </div>
+    </div>
 
-    <!-- What's inside -->
-    <section class="ab-block">
-        <h2 class="section-title">What you'll find here</h2>
-        <div class="ab-grid">
-            <a class="ab-card panel" href="{% url 'agency_list' %}">
-                <h3>Agency Profiles</h3>
-                <p>In-depth profiles of 21 developing-country space agencies — history, missions, innovations and official links.</p>
-            </a>
-            <a class="ab-card panel" href="{% url 'dashboard' %}">
-                <h3>Live Dashboard</h3>
-                <p>Real-time launches, humans in space and the ISS position, plus interactive budget comparisons across 34 agencies.</p>
-            </a>
-            <a class="ab-card panel" href="{% url 'timeline_view' %}">
-                <h3>History Timeline</h3>
-                <p>An interactive journey through the milestones that carried developing nations into orbit.</p>
-            </a>
-            <a class="ab-card panel" href="{% url 'map_view' %}">
-                <h3>Interactive Map</h3>
-                <p>A world map plotting every agency, so you can explore space programs by geography.</p>
-            </a>
-            <a class="ab-card panel" href="{% url 'news_list' %}">
-                <h3>Live Newsroom</h3>
-                <p>Current space and astronomy headlines, updated continuously from across the industry.</p>
-            </a>
-            <a class="ab-card panel" href="{% url 'forum_home' %}">
-                <h3>Community Forum</h3>
-                <p>A space to discuss launches, missions and the future of the Global South in orbit.</p>
-            </a>
-        </div>
-    </section>
+    <div class="ab-block reveal">
+      <span class="mono-label">03 / About the data</span>
+      <p>Race2Space draws on public sources — including the UN Office for Outer Space Affairs (UNOOSA), national space-agency publications, and open data feeds for live launches and orbital tracking. Budget figures are indicative annual estimates, not audited accounts, and some (such as China's) are best-available approximations.</p>
+    </div>
 
-    <!-- Data -->
-    <section class="ab-block">
-        <h2 class="section-title">About the data</h2>
-        <p>Race2Space draws on public sources — including the United Nations Office for Outer Space Affairs (UNOOSA), national space-agency publications, and open data feeds for live launches and orbital tracking. Budget figures are indicative annual estimates compiled from government and industry reporting, not audited accounts, and some (such as China's) are best-available approximations. The aim is an honest, accessible overview, not a definitive financial record.</p>
-    </section>
-
-    <!-- Creator -->
-    <section class="ab-block ab-creator">
-        <h2 class="section-title">Who's behind it</h2>
-        <p>Race2Space is an independent project by <strong>Jerome Bustarga</strong>. What began as a digital-humanities research project grew into a living platform dedicated to the countries reaching for space against the odds. It's built and maintained by one person, with the help of modern web and AI tools, and it keeps evolving.</p>
-        <p>Have a correction, a suggestion, or want to collaborate? Get in touch at <a href="mailto:jhb09808@creighton.edu">jhb09808@creighton.edu</a> or visit <a href="https://jeromebustarga.com" target="_blank" rel="noopener">jeromebustarga.com</a>.</p>
-        <div class="ab-cta">
-            <a class="btn btn-primary" href="{% url 'agency_list' %}">Explore the agencies</a>
-            <a class="btn btn-outline" href="{% url 'dashboard' %}">Open the dashboard</a>
-        </div>
-    </section>
-
-</article>
+    <div class="ab-block reveal">
+      <span class="mono-label">04 / Who's behind it</span>
+      <p>Race2Space is an independent project by <strong>Jerome Bustarga</strong>. What began as a digital-humanities research project grew into a live platform dedicated to the countries reaching for space against the odds.</p>
+      <p>Get in touch at <a href="mailto:jhb09808@creighton.edu">jhb09808@creighton.edu</a> or visit <a href="https://jeromebustarga.com" target="_blank" rel="noopener">jeromebustarga.com</a>.</p>
+      <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.6rem">
+        <a class="btn btn-orange" href="{% url 'agency_list' %}">Explore Agencies</a>
+        <a class="btn" href="{% url 'dashboard' %}">Open Dashboard</a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <style>
-    .about { max-width: 880px; margin: 0 auto; }
-
-    .ab-hero { display: grid; grid-template-columns: 1.4fr 0.6fr; gap: 2rem; align-items: center; padding: clamp(1rem, 4vw, 2.5rem) 0 2.5rem; }
-    @media (max-width: 720px) { .ab-hero { grid-template-columns: 1fr; } .ab-hero-art { max-width: 260px; } }
-    .ab-hero .eyebrow { display: block; margin-bottom: 0.6rem; }
-    .ab-hero h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
-    .ab-lead { font-size: clamp(1.05rem, 1.7vw, 1.3rem); color: var(--text-soft); margin-top: 1.1rem; }
-    .ab-hero-art svg { width: 100%; height: auto; overflow: visible; }
-
-    .ab-block { padding: 2rem 0; border-top: 1px solid var(--line); }
-    .ab-block p { color: var(--text-soft); max-width: 68ch; }
-    .ab-block p strong { color: var(--text); }
-
-    .ab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
-    .ab-card { padding: 1.3rem 1.4rem; text-decoration: none; color: var(--text) !important; display: block; }
-    .ab-card h3 { font-size: 1.15rem; margin: 0 0 0.4rem; }
-    .ab-card:hover h3 { color: var(--accent); }
-    .ab-card p { color: var(--text-soft); font-size: 0.9rem; margin: 0; }
-
-    .ab-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.6rem; }
+  .ab-hero{position:relative;overflow:hidden;padding-top:clamp(3rem,7vw,6rem);padding-bottom:clamp(3rem,7vw,6rem)}
+  .ab-stars{position:absolute;inset:0;z-index:0}
+  .ab-title{font-size:clamp(2.4rem,7vw,5rem);margin-top:.3rem}
+  .ab-lead{max-width:52ch;margin-top:1.4rem;color:var(--white-soft);text-transform:uppercase;font-size:.8rem;letter-spacing:.04em;line-height:1.9}
+  .ab-body{max-width:820px}
+  .ab-block{padding:2.2rem 0;border-top:1px solid var(--line)}
+  .ab-block .mono-label{display:block;margin-bottom:1.1rem}
+  .ab-block p{color:var(--ink-soft);margin-bottom:1rem;max-width:66ch}
+  .ab-block p strong{color:var(--ink)}
+  .ab-list{display:flex;flex-direction:column}
+  .ab-list a{display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;padding:1rem 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+  .ab-list a:hover b{color:var(--orange-deep)}
+  .ab-list b{font-family:var(--disp);font-size:1.2rem;font-weight:400}
+  .ab-list span{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--paper-mute);max-width:44ch}
 </style>
 {% endblock %}

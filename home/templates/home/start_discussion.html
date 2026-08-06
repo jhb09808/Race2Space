@@ -1,37 +1,29 @@
 {% extends 'home/base.html' %}
 
-{% block title %}Start a New Discussion — Race2Space{% endblock %}
+{% block title %}Start a Discussion — Forum | Race2Space{% endblock %}
 
 {% block content %}
-<div class="start-discussion">
-    <div class="jumbotron">
-        <p class="eyebrow">Community</p>
-        <h1 class="display-4">Start a New Discussion</h1>
-        <p class="lead">Share your thoughts and engage with the community by starting a new discussion.</p>
+<section class="paper">
+  <div class="section-inner sd">
+    <a href="{% url 'forum_home' %}" class="back mono">&#9666; Forum</a>
+    <span class="eyebrow">Community</span>
+    <h1 class="sd-h">New Post</h1>
+    <div class="sd-form">
+      <form action="{% url 'create_discussion' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group"><label for="subject">Subject</label><input type="text" id="subject" name="subject" required></div>
+        <div class="form-group"><label for="message">Message</label><textarea id="message" name="message" rows="5" required></textarea></div>
+        <div class="form-group"><label for="name">Name (optional)</label><input type="text" id="name" name="name" placeholder="Anonymous"></div>
+        <button type="submit" class="btn btn-orange no-arrow">Post Discussion</button>
+      </form>
     </div>
-
-    <div class="panel form-panel">
-        <form action="{% url 'create_discussion' %}" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="subject">Subject</label>
-                <input type="text" class="form-control" id="subject" name="subject" required>
-            </div>
-            <div class="form-group">
-                <label for="message">Message</label>
-                <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="name">Name (optional)</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Anonymous">
-            </div>
-            <button type="submit" class="btn btn-primary">Post discussion</button>
-        </form>
-    </div>
-</div>
+  </div>
+</section>
 
 <style>
-    .start-discussion { max-width: 720px; margin: 0 auto; }
-    .form-panel { padding: 1.8rem; }
+  .sd{max-width:680px}
+  .back{display:inline-block;margin-bottom:1.2rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange-deep)}
+  .sd-h{font-size:clamp(2.4rem,6vw,4rem);margin:.3rem 0 1.8rem}
+  .sd-form{border:1px solid var(--line);padding:1.8rem}
 </style>
 {% endblock %}

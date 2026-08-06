@@ -4,372 +4,159 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Race2Space — Developing nations in space{% endblock %}</title>
+    <title>{% block title %}Race2Space — Developing Nations in Space{% endblock %}</title>
 
     <!-- SEO -->
-    <meta name="description" content="{% block meta_description %}Race2Space showcases the space programs, missions and milestones of developing nations — country profiles, a live dashboard of launches and spending, an interactive timeline, and a community forum.{% endblock %}">
+    <meta name="description" content="{% block meta_description %}Race2Space is a live index of the world's space agencies — tracking the rise of developing nations beyond Earth with agency profiles, a live dashboard, an interactive timeline and more.{% endblock %}">
     <meta name="keywords" content="developing countries space, Global South space agencies, space exploration, satellites, ISRO, CNSA, space missions, space budgets, Race2Space">
     <meta name="author" content="Jerome Bustarga">
     <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#101728">
+    <meta name="theme-color" content="#0B0B0C">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <link rel="icon" type="image/x-icon" href="{% static 'home/favicon.ico' %}">
 
-    <!-- Open Graph (Facebook, LinkedIn, Slack, Discord) -->
     <meta property="og:site_name" content="Race2Space">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="en_US">
-    <meta property="og:title" content="{% block social_title %}Race2Space — Developing nations in space{% endblock %}">
-    <meta property="og:description" content="{% block social_desc %}The Global South's rise into orbit: agency profiles, live launches, spending data, an interactive timeline and a community forum.{% endblock %}">
+    <meta property="og:title" content="{% block social_title %}Race2Space — Developing Nations in Space{% endblock %}">
+    <meta property="og:description" content="{% block social_desc %}A live index of the world's space agencies and the rise of the Global South into orbit.{% endblock %}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'home/racespace.png' %}">
-
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}Race2Space — Developing nations in space{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_desc %}The Global South's rise into orbit: profiles, live data, timeline and community.{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}Race2Space — Developing Nations in Space{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_desc %}A live index of the world's space agencies and the rise of the Global South into orbit.{% endblock %}">
     <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'home/racespace.png' %}">
 
-    <!-- Structured data -->
     {% block structured_data %}
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Race2Space",
-      "url": "{{ request.scheme }}://{{ request.get_host }}/",
-      "description": "Space programs, missions and milestones of developing nations.",
-      "publisher": {
-        "@type": "Organization",
-        "name": "Race2Space",
-        "logo": { "@type": "ImageObject", "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'home/racespace.png' %}" }
-      }
-    }
+    { "@context":"https://schema.org","@type":"WebSite","name":"Race2Space",
+      "url":"{{ request.scheme }}://{{ request.get_host }}/",
+      "description":"Space programs, missions and milestones of developing nations.",
+      "publisher":{"@type":"Organization","name":"Race2Space","logo":{"@type":"ImageObject","url":"{{ request.scheme }}://{{ request.get_host }}{% static 'home/racespace.png' %}"}} }
     </script>
     {% endblock %}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Leaflet + Chart.js for the dashboard/map pages -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="icon" type="image/x-icon" href="{% static 'home/favicon.ico' %}">
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
-    <!-- Set theme before paint to avoid flash -->
-    <script>
-        (function () {
-            try {
-                var t = localStorage.getItem('r2s-theme');
-                if (t) document.documentElement.setAttribute('data-theme', t);
-            } catch (e) {}
-        })();
-    </script>
-
 <style>
-    /* ============================================================
-       Race2Space — "Ground to Orbit" design system
-       Warm, editorial identity for the Global South in space.
-       Default theme: dark (suits the space imagery); light via
-       toggle or OS preference.
-       ============================================================ */
-    :root {
-        /* Brand constants */
-        --amber:      #F3C878;   /* solar accent (on dark) */
-        --amber-deep: #E1912A;   /* solar accent (on light) */
-        --terra:      #D9744F;   /* earth / launch ground */
-        --teal:       #4FB3A2;   /* quiet support */
+@font-face{ font-family:'Jersey 25'; src:url("{% static 'home/fonts/Jersey25-Regular.ttf' %}") format('truetype'); font-display:swap; }
 
-        /* Type */
-        --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-        --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", "Roboto Mono", Menlo, monospace;
+:root{
+  --ink:#0B0B0C; --ink-2:#131317; --paper:#F2F0E8; --paper-2:#EAE7DD; --white:#FFFFFF;
+  --orange:#F2894A; --orange-deep:#E4712E;
+  --ink-soft:#54524B; --paper-mute:#8C8A82; --white-soft:#C8C8CE; --white-mute:#84848C;
+  --line:#DBD8CD; --line-d:#26262C;
+  --disp:'Jersey 25','Press Start 2P',monospace;
+  --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+  --sans:"Helvetica Neue",Arimo,Helvetica,Arial,sans-serif;
+  --wrap:1320px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh}
+img,svg,video,canvas,iframe{max-width:100%}
+h1,h2,h3,h4,h5,h6{overflow-wrap:break-word}
+a{color:var(--orange-deep);text-decoration:none}
+a:hover{color:var(--ink)}
 
-        /* --- Dark theme tokens (default) --- */
-        --ground:     #101728;
-        --ground-2:   #0B1120;
-        --surface:    rgba(26, 36, 64, 0.72);
-        --surface-2:  #1A2440;
-        --text:       #EFE7D6;
-        --text-soft:  #A6AEC6;
-        --line:       #2A3556;
-        --accent:     var(--amber);
-        --accent-ink: #1A1206;
-        --photo-op:   0.18;
-        --glow-op:    1;
+.disp{font-family:var(--disp);font-weight:400;line-height:.92;letter-spacing:.01em}
+h1,h2,h3{font-family:var(--disp);font-weight:400;line-height:.94;letter-spacing:.01em}
+h4,h5,h6{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em}
+.mono-label{font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;color:var(--paper-mute)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.orange{color:var(--orange-deep)}
+.dark{background:var(--ink);color:var(--white)}
+.dark .mono-label{color:var(--white-mute)}
+.dark a{color:var(--orange)}
 
-        --wrap: 1440px;
-    }
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 
-    @media (prefers-color-scheme: light) {
-        :root {
-            --ground:     #F4EEE1;
-            --ground-2:   #FBF7EF;
-            --surface:    rgba(255, 255, 255, 0.86);
-            --surface-2:  #FFFFFF;
-            --text:       #23201A;
-            --text-soft:  #5B554A;
-            --line:       #DED3BF;
-            --accent:     var(--amber-deep);
-            --accent-ink: #FFF6E6;
-            --photo-op:   0.05;
-            --glow-op:    0.7;
-        }
-    }
-    :root[data-theme="dark"] {
-        --ground: #101728; --ground-2: #0B1120; --surface: rgba(26,36,64,0.72); --surface-2:#1A2440;
-        --text: #EFE7D6; --text-soft: #A6AEC6; --line: #2A3556;
-        --accent: var(--amber); --accent-ink: #1A1206; --photo-op: 0.18; --glow-op: 1;
-    }
-    :root[data-theme="light"] {
-        --ground: #F4EEE1; --ground-2: #FBF7EF; --surface: rgba(255,255,255,0.86); --surface-2:#FFFFFF;
-        --text: #23201A; --text-soft: #5B554A; --line: #DED3BF;
-        --accent: var(--amber-deep); --accent-ink: #FFF6E6; --photo-op: 0.05; --glow-op: 0.7;
-    }
+/* buttons */
+.btn{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;font-size:.74rem;font-weight:600;
+  padding:.75rem 1.2rem;border:1px solid currentColor;background:transparent;color:var(--ink);cursor:pointer;
+  display:inline-flex;align-items:center;gap:.45rem;text-decoration:none;transition:transform .12s,background .15s,color .15s}
+.btn::after{content:'\25B8';font-size:.9em}
+.btn.no-arrow::after{content:''}
+.btn:hover{transform:translate(1px,1px)}
+.btn-orange{background:var(--orange);border-color:var(--orange);color:var(--ink)}
+.btn-orange:hover{background:var(--orange-deep);border-color:var(--orange-deep);color:var(--ink)}
+.btn-fill{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.dark .btn{color:var(--white)}
+.dark .btn-fill{background:var(--white);border-color:var(--white);color:var(--ink)}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+/* nav */
+.navbar{background:var(--ink);color:var(--white);border-bottom:1px solid var(--line-d);position:sticky;top:0;z-index:1000}
+.nav-inner{max-width:var(--wrap);margin:0 auto;padding:.9rem clamp(1.1rem,4vw,3rem);display:flex;align-items:center;justify-content:space-between;gap:1.2rem}
+.navbar-brand{display:flex;align-items:center;gap:.7rem;text-decoration:none;color:var(--white)}
+.navbar-brand .logo{width:34px;height:34px;border:1px solid #3a3a40;display:grid;place-items:center;background:#111;flex:0 0 auto}
+.navbar-brand .bt{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;line-height:1.35;text-transform:uppercase}
+.nav-menu{display:flex;align-items:center;gap:1.2rem}
+.navbar-nav{display:flex;flex-direction:row;align-items:center;gap:1.2rem;list-style:none}
+.navbar-nav .nav-link{color:var(--white-soft);text-decoration:none;font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;position:relative;padding-left:.85rem}
+.navbar-nav .nav-link::before{content:'';position:absolute;left:0;top:50%;width:4px;height:4px;background:var(--orange);transform:translateY(-50%)}
+.navbar-nav .nav-link:hover,.navbar-nav .nav-link.active{color:var(--orange)}
+.nav-toggle{display:none;flex-direction:column;gap:5px;background:transparent;border:1px solid #3a3a40;padding:.55rem .6rem;cursor:pointer}
+.nav-toggle span{width:22px;height:2px;background:var(--white);transition:transform .25s,opacity .25s}
+.nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+.nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media(max-width:940px){
+  .nav-toggle{display:inline-flex}
+  .nav-menu{display:none;position:absolute;top:100%;left:0;right:0;background:var(--ink);border-bottom:1px solid var(--line-d);flex-direction:column;align-items:stretch;padding:.8rem clamp(1.1rem,4vw,3rem) 1.2rem}
+  .nav-menu.open{display:flex}
+  .navbar-nav{flex-direction:column;align-items:stretch;gap:0}
+  .navbar-nav .nav-link{padding:.8rem .85rem;border-bottom:1px solid var(--line-d)}
+  .nav-menu .btn{margin-top:.8rem;width:fit-content}
+}
 
-    /* Responsive safety nets — never scroll sideways; media scales down */
-    html, body { max-width: 100%; overflow-x: hidden; }
-    img, svg, video, canvas, iframe { max-width: 100%; }
-    h1, h2, h3, h4, h5, h6, p, a, li { overflow-wrap: break-word; }
+/* main + sections */
+main{flex:1}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 clamp(1.1rem,4vw,3rem)}
+section{padding:clamp(3rem,7vw,6rem) clamp(1.1rem,4vw,3rem)}
+.section-inner{max-width:var(--wrap);margin:0 auto}
+.eyebrow{font-family:var(--mono);text-transform:uppercase;letter-spacing:.16em;font-size:.72rem;color:var(--orange-deep);display:inline-block;margin-bottom:1rem}
+.dark .eyebrow{color:var(--orange)}
 
-    body {
-        background-color: var(--ground);
-        color: var(--text);
-        font-family: var(--sans);
-        line-height: 1.7;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        -webkit-font-smoothing: antialiased;
-        position: relative;
-    }
+/* cards / blocks (flat, bordered, sharp) */
+.card,.panel{background:var(--white);border:1px solid var(--line);color:var(--ink)}
+.dark .card,.dark .panel{background:var(--ink-2);border-color:var(--line-d);color:var(--white)}
+.card{padding:1.6rem}
 
-    /* Ambient glow + faint space photo (uses the site's background.jpg) */
-    body::before {
-        content: '';
-        position: fixed; inset: 0; z-index: -2; pointer-events: none;
-        opacity: var(--glow-op);
-        background:
-            radial-gradient(circle at 15% 12%, rgba(243, 200, 120, 0.16), transparent 45%),
-            radial-gradient(circle at 85% 20%, rgba(217, 116, 79, 0.14), transparent 45%),
-            radial-gradient(circle at 50% 95%, rgba(79, 179, 162, 0.12), transparent 50%);
-    }
-    body::after {
-        content: '';
-        position: fixed; inset: 0; z-index: -3; pointer-events: none;
-        background: url("{% static 'home/background.jpg' %}") center / cover no-repeat fixed;
-        opacity: var(--photo-op);
-    }
+/* tables */
+.table,table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.82rem}
+.table th,table th{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--paper-mute);text-align:left;padding:.7rem .8rem;border-bottom:2px solid var(--ink)}
+.table td,table td{padding:.7rem .8rem;border-bottom:1px solid var(--line);vertical-align:top}
+.dark .table th{color:var(--white-mute);border-color:var(--white)}
+.dark .table td{border-color:var(--line-d)}
 
-    /* ---------- Typography ---------- */
-    h1, h2, h3, h4, h5, h6 {
-        font-family: var(--serif);
-        font-weight: 700;
-        line-height: 1.12;
-        letter-spacing: -0.01em;
-        color: var(--text);
-        text-wrap: balance;
-        margin-bottom: 0.6rem;
-    }
-    h1 { font-size: clamp(2rem, 4.5vw, 3.2rem); }
-    h2 { font-size: clamp(1.5rem, 3vw, 2.3rem); }
-    h3 { font-size: clamp(1.2rem, 2vw, 1.55rem); }
-    p { margin-bottom: 1rem; }
-    a { color: var(--teal); text-decoration: none; transition: color .2s; }
-    a:hover { color: var(--accent); }
+/* forms */
+label,.form-label{font-family:var(--mono);text-transform:uppercase;font-size:.68rem;letter-spacing:.1em;color:var(--paper-mute);display:block;margin-bottom:.5rem}
+input[type=text],input[type=email],textarea,select,.form-control,.form-select{
+  width:100%;font-family:var(--mono);font-size:.9rem;background:var(--white);color:var(--ink);
+  border:1px solid var(--ink);border-radius:0;padding:.7rem .8rem}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--orange);outline-offset:-1px}
+.form-group{margin-bottom:1.3rem}
+.dark input,.dark textarea,.dark select,.dark .form-control,.dark .form-select{background:var(--ink-2);color:var(--white);border-color:var(--line-d)}
 
-    .eyebrow {
-        font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.22em;
-        text-transform: uppercase; color: var(--accent); font-weight: 600;
-    }
-    .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-    .section-title {
-        position: relative; display: inline-block; padding-bottom: 0.55rem; margin-bottom: 1.6rem;
-    }
-    .section-title::after {
-        content: ''; position: absolute; left: 0; bottom: 0; width: 52px; height: 3px;
-        background: linear-gradient(90deg, var(--accent), var(--terra)); border-radius: 3px;
-    }
+hr{border:0;border-top:1px solid var(--line)}
+.dark hr{border-color:var(--line-d)}
+.text-center{text-align:center}
+.text-muted{color:var(--paper-mute)}
 
-    /* ---------- Navigation ---------- */
-    .navbar {
-        background: color-mix(in srgb, var(--ground) 85%, transparent);
-        backdrop-filter: blur(16px);
-        border-bottom: 1px solid var(--line);
-        padding: 0.7rem 0;
-        position: sticky; top: 0; z-index: 1000;
-    }
-    .navbar-brand {
-        font-family: var(--serif); color: var(--text) !important;
-        font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em;
-        display: flex; align-items: center; gap: 0.7rem; text-decoration: none;
-    }
-    .navbar-brand img { width: 34px; height: 34px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,.3)); transition: transform .4s ease; flex: 0 0 auto; }
-    .navbar-brand:hover img { transform: rotate(-8deg) scale(1.05); }
-    .nav-inner {
-        max-width: var(--wrap); margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2rem);
-        display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-    }
-    .nav-menu { display: flex; }
-    .navbar-nav {
-        display: flex; flex-direction: row; align-items: center; gap: 0.25rem;
-        list-style: none; margin: 0; padding: 0;
-    }
-    .navbar-nav .nav-item { list-style: none; }
-    .navbar-nav .nav-link {
-        color: var(--text-soft) !important; font-size: 0.95rem; font-weight: 500;
-        padding: 0.4rem 0.85rem !important; border-radius: 100px; position: relative; transition: color .2s, background .2s;
-        display: block; text-decoration: none; white-space: nowrap;
-    }
-    .navbar-nav .nav-link:hover { color: var(--accent) !important; }
-    .navbar-nav .nav-link.active { color: var(--accent) !important; }
-    /* Hamburger toggle (hidden on desktop) */
-    .nav-toggle {
-        display: none; flex-direction: column; gap: 5px; background: transparent;
-        border: 1px solid var(--line); border-radius: 10px; padding: 0.55rem 0.6rem; cursor: pointer; flex: 0 0 auto;
-    }
-    .nav-toggle span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: transform .25s, opacity .25s; }
-    .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-    .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-    .nav-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .theme-toggle {
-        font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
-        background: transparent; color: var(--text); border: 1px solid var(--line);
-        border-radius: 100px; padding: 0.38rem 0.8rem; cursor: pointer; transition: border-color .2s, color .2s;
-        margin-left: 0.5rem;
-    }
-    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
-    .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* footer */
+footer.site-footer{background:var(--ink);color:var(--white-soft);border-top:1px solid var(--line-d);padding:2.4rem clamp(1.1rem,4vw,3rem)}
+footer.site-footer .fw{max-width:var(--wrap);margin:0 auto;display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;align-items:flex-end}
+footer.site-footer .foot-brand{font-family:var(--disp);font-size:2rem;color:var(--white);line-height:.9}
+footer.site-footer .fcol{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;line-height:2}
+footer.site-footer a{color:var(--orange)}
 
-    /* ---------- Main container ---------- */
-    .container {
-        flex: 1; width: 100%; max-width: var(--wrap);
-        margin: 0 auto; padding: 2rem clamp(1rem, 4vw, 2rem);
-    }
-
-    /* ---------- Cards & surfaces ---------- */
-    .card, .media-body, .panel {
-        background: var(--surface);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        color: var(--text);
-        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-    }
-    .card { overflow: hidden; }
-    .card:hover, .media-body:hover, .panel:hover {
-        transform: translateY(-4px);
-        border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
-        box-shadow: 0 18px 40px -22px rgba(0,0,0,0.5);
-    }
-    .card-body { padding: 1.4rem; }
-    .card-title { font-family: var(--serif); }
-
-    /* ---------- Jumbotron / page hero ---------- */
-    .jumbotron {
-        background: var(--surface);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        padding: clamp(2rem, 5vw, 3.5rem) 2rem;
-        text-align: center;
-        margin: 1rem 0 2.5rem;
-        position: relative; overflow: hidden;
-    }
-    .jumbotron h1 {
-        background: linear-gradient(120deg, var(--accent), var(--terra));
-        -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .jumbotron .lead { color: var(--text-soft); max-width: 60ch; margin: 0 auto 1.5rem; }
-
-    /* ---------- Buttons ---------- */
-    .btn {
-        font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
-        letter-spacing: 0.06em; text-transform: uppercase;
-        padding: 0.72rem 1.6rem; border-radius: 100px; border: 1px solid transparent;
-        transition: transform .2s ease, box-shadow .2s ease, background .2s, color .2s; cursor: pointer;
-    }
-    .btn-primary, .btn-lg.btn-primary {
-        background: var(--accent); color: var(--accent-ink) !important; border-color: var(--accent);
-        box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--accent) 75%, transparent);
-    }
-    .btn-primary:hover {
-        background: var(--accent); color: var(--accent-ink) !important;
-        transform: translateY(-2px); box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--accent) 85%, transparent);
-    }
-    .btn-outline {
-        background: transparent; color: var(--text) !important; border-color: var(--line);
-    }
-    .btn-outline:hover { border-color: var(--accent); color: var(--accent) !important; transform: translateY(-2px); }
-
-    /* ---------- Forms ---------- */
-    .form-control, .form-select, textarea, input[type="text"], input[type="email"] {
-        background: color-mix(in srgb, var(--surface-2) 55%, transparent) !important;
-        border: 1px solid var(--line) !important;
-        color: var(--text) !important;
-        border-radius: 12px; padding: 0.75rem 1rem; transition: border-color .2s, box-shadow .2s;
-    }
-    .form-control:focus, .form-select:focus, textarea:focus {
-        border-color: var(--accent) !important;
-        box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--accent) 25%, transparent) !important;
-        color: var(--text) !important; outline: none;
-    }
-    label, .form-label { color: var(--text-soft); font-weight: 500; margin-bottom: 0.4rem; display: inline-block; }
-    .form-group { margin-bottom: 1.2rem; }
-
-    /* ---------- Tables ---------- */
-    .table { color: var(--text); border-color: var(--line); }
-    .table > :not(caption) > * > * { background: transparent; color: var(--text); border-color: var(--line); }
-    .table thead th {
-        font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
-        color: var(--text-soft); border-bottom: 2px solid var(--line);
-    }
-    .table-striped > tbody > tr:nth-of-type(odd) > * {
-        background: color-mix(in srgb, var(--surface-2) 40%, transparent); color: var(--text);
-    }
-
-    hr { border-color: var(--line); opacity: 1; }
-    .text-muted { color: var(--text-soft) !important; }
-
-    /* ---------- Footer ---------- */
-    footer.site-footer {
-        background: var(--ground-2);
-        border-top: 1px solid var(--line);
-        color: var(--text-soft);
-        padding: 2.6rem 1rem 2rem;
-        text-align: center;
-        margin-top: 3rem;
-    }
-    footer.site-footer a { color: var(--accent); }
-    footer.site-footer p { margin-bottom: 0.4rem; font-size: 0.9rem; }
-    footer.site-footer .foot-brand { font-family: var(--serif); font-size: 1.15rem; color: var(--text); margin-bottom: 0.6rem; }
-
-    /* ---------- Trajectory motif (reusable brand graphic) ---------- */
-    .traj-line { stroke: var(--accent); stroke-width: 2.5; fill: none; stroke-linecap: round; }
-    @media (prefers-reduced-motion: no-preference) {
-        .traj-draw { stroke-dasharray: 640; stroke-dashoffset: 640; animation: r2s-draw 2.2s ease forwards .2s; }
-        @keyframes r2s-draw { to { stroke-dashoffset: 0; } }
-    }
-
-    /* ---------- Scrollbar ---------- */
-    ::-webkit-scrollbar { width: 10px; height: 10px; }
-    ::-webkit-scrollbar-track { background: var(--ground-2); }
-    ::-webkit-scrollbar-thumb { background: linear-gradient(var(--accent), var(--terra)); border-radius: 6px; }
-
-    /* ---------- Mobile navigation ---------- */
-    @media (max-width: 900px) {
-        .nav-toggle { display: inline-flex; }
-        .nav-menu {
-            display: none; position: absolute; top: 100%; left: 0; right: 0;
-            background: var(--ground); border-bottom: 1px solid var(--line);
-            box-shadow: 0 12px 28px -18px rgba(0,0,0,0.6);
-            padding: 0.6rem clamp(1rem, 4vw, 2rem) 1rem;
-        }
-        .nav-menu.open { display: block; }
-        .navbar-nav { flex-direction: column; align-items: stretch; gap: 0; }
-        .navbar-nav .nav-link { padding: 0.75rem 0.6rem !important; border-radius: 8px; }
-        .navbar-nav .nav-link:hover { background: var(--surface-2); }
-        .theme-toggle { margin: 0.7rem 0 0.3rem; width: fit-content; }
-    }
+::selection{background:var(--orange);color:var(--ink)}
+{% block extra_head %}{% endblock %}
 </style>
     {% block extra_styles %}{% endblock %}
 </head>
@@ -377,83 +164,78 @@
     <nav class="navbar">
         <div class="nav-inner">
             <a class="navbar-brand" href="{% url 'home' %}">
-                <img src="{% static 'home/racespace.png' %}" alt="Race2Space logo">
-                Race2Space
+                <span class="logo"><svg width="20" height="20" viewBox="0 0 22 22"><g fill="#F2894A"><rect x="9" y="2" width="4" height="2"/><rect x="5" y="6" width="12" height="2"/><rect x="3" y="10" width="16" height="2"/><rect x="5" y="14" width="12" height="2"/><rect x="9" y="18" width="4" height="2"/></g></svg></span>
+                <span class="bt">RACE2SPACE<br>SPACE INDEX &rsquo;26</span>
             </a>
-            <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
-                <span></span><span></span><span></span>
-            </button>
+            <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navMenu"><span></span><span></span><span></span></button>
             <div class="nav-menu" id="navMenu">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'agency_list' %}">Agencies</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'timeline_view' %}">Timeline</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'news_list' %}">News</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'missions_list' %}">Missions</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'forum_home' %}">Forum</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
-                    <li class="nav-item">
-                        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
-                    </li>
+                    <li><a class="nav-link" href="{% url 'home' %}">Index</a></li>
+                    <li><a class="nav-link" href="{% url 'agency_list' %}">Agencies</a></li>
+                    <li><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li><a class="nav-link" href="{% url 'timeline_view' %}">Timeline</a></li>
+                    <li><a class="nav-link" href="{% url 'news_list' %}">News</a></li>
+                    <li><a class="nav-link" href="{% url 'missions_list' %}">Missions</a></li>
+                    <li><a class="nav-link" href="{% url 'forum_home' %}">Forum</a></li>
+                    <li><a class="nav-link" href="{% url 'about' %}">About</a></li>
                 </ul>
+                <a class="btn btn-orange" href="{% url 'dashboard' %}">Live Data</a>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        {% block content %}
-        {% endblock %}
-    </div>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 
     <footer class="site-footer">
-        <div class="foot-brand">Race2Space</div>
-        <p>Celebrating the rise of developing nations in space.</p>
-        <p><a href="{% url 'about' %}">About this project</a> · <a href="https://jeromebustarga.com" target="_blank" rel="noopener">jeromebustarga.com</a></p>
-        <p>&copy; Jerome Bustarga {% now "Y" %}</p>
+        <div class="fw">
+            <div class="foot-brand">RACE2SPACE</div>
+            <div class="fcol">
+                Celebrating developing nations in space<br>
+                <a href="{% url 'about' %}">About</a> &middot; <a href="https://jeromebustarga.com" target="_blank" rel="noopener">jeromebustarga.com</a>
+            </div>
+            <div class="fcol">&copy; Jerome Bustarga {% now "Y" %}<br>Space Index &rsquo;26</div>
+        </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Theme toggle with persistence
-        (function () {
-            var btn = document.getElementById('themeToggle');
-            var root = document.documentElement;
-            function current() {
-                var t = root.getAttribute('data-theme');
-                if (t) return t;
-                return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-            }
-            if (btn) {
-                btn.addEventListener('click', function () {
-                    var next = current() === 'dark' ? 'light' : 'dark';
-                    root.setAttribute('data-theme', next);
-                    try { localStorage.setItem('r2s-theme', next); } catch (e) {}
-                });
-            }
-            // Mobile nav toggle (self-contained, no Bootstrap dependency)
-            var navToggle = document.getElementById('navToggle');
-            var navMenu = document.getElementById('navMenu');
-            if (navToggle && navMenu) {
-                navToggle.addEventListener('click', function () {
-                    var open = navMenu.classList.toggle('open');
-                    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-                });
-                navMenu.querySelectorAll('a').forEach(function (a) {
-                    a.addEventListener('click', function () {
-                        navMenu.classList.remove('open');
-                        navToggle.setAttribute('aria-expanded', 'false');
-                    });
-                });
-            }
-            // Highlight the active nav link
-            var path = window.location.pathname;
-            document.querySelectorAll('.navbar-nav .nav-link').forEach(function (a) {
-                var href = a.getAttribute('href');
-                if (href === path || (href !== '/' && path.indexOf(href) === 0)) a.classList.add('active');
-                else if (href === '/' && path === '/') a.classList.add('active');
-            });
-        })();
+    (function(){
+        var RM=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // nav toggle
+        var t=document.getElementById('navToggle'),m=document.getElementById('navMenu');
+        if(t&&m){t.addEventListener('click',function(){var o=m.classList.toggle('open');t.setAttribute('aria-expanded',o?'true':'false');});
+            m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){m.classList.remove('open');t.setAttribute('aria-expanded','false');});});}
+        // active link
+        var path=location.pathname;
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(function(a){var h=a.getAttribute('href');
+            if(h===path||(h!=='/'&&path.indexOf(h)===0))a.classList.add('active');else if(h==='/'&&path==='/')a.classList.add('active');});
+        // count-up
+        window.r2sCountUp=function(el){if(el.dataset.done)return;el.dataset.done=1;
+            var v=parseFloat(el.getAttribute('data-count')),suf=el.getAttribute('data-suffix')||'',dec=parseInt(el.getAttribute('data-decimals')||'0',10);
+            if(RM||isNaN(v)){el.textContent=(isNaN(v)?el.textContent:v.toFixed(dec))+suf;return;}
+            var dur=1300,st=null;function step(ts){if(!st)st=ts;var p=Math.min((ts-st)/dur,1),e=1-Math.pow(1-p,3);
+                el.textContent=(v*e).toFixed(dec)+suf;if(p<1)requestAnimationFrame(step);else el.textContent=v.toFixed(dec)+suf;}
+            requestAnimationFrame(step);};
+        // reveal + counters
+        var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){
+            e.target.classList.add('in');
+            if(e.target.hasAttribute('data-count'))window.r2sCountUp(e.target);
+            e.target.querySelectorAll&&e.target.querySelectorAll('[data-count]').forEach(window.r2sCountUp);
+            io.unobserve(e.target);}});},{threshold:.2}):null;
+        function watch(el){if(io)io.observe(el);else{el.classList.add('in');if(el.hasAttribute('data-count'))window.r2sCountUp(el);}}
+        document.querySelectorAll('.reveal,[data-count]').forEach(watch);
+        // starfield helper (pages add <canvas data-stars>)
+        window.r2sStarfield=function(c){var x=c.getContext('2d');function size(){c.width=c.offsetWidth;c.height=c.offsetHeight;}size();
+            var s=[];for(var i=0;i<160;i++)s.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.2,a:Math.random()});
+            function draw(){x.clearRect(0,0,c.width,c.height);x.strokeStyle='rgba(242,137,74,0.12)';x.lineWidth=1.5;x.beginPath();
+                x.ellipse(c.width*0.7,c.height*0.5,c.width*0.28,c.height*0.42,0,0,Math.PI*2);x.stroke();
+                for(var i=0;i<s.length;i++){var q=s[i];x.globalAlpha=.3+.7*Math.abs(Math.sin(q.a));x.fillStyle='#fff';x.fillRect(q.x*c.width,q.y*c.height,q.r,q.r);q.a+=.01;}
+                x.globalAlpha=1;requestAnimationFrame(draw);}
+            if(!RM)draw();else{for(var i=0;i<s.length;i++){var q=s[i];x.fillStyle='#fff';x.fillRect(q.x*c.width,q.y*c.height,q.r,q.r);}}
+            window.addEventListener('resize',size);};
+        document.querySelectorAll('canvas[data-stars]').forEach(window.r2sStarfield);
+    })();
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>

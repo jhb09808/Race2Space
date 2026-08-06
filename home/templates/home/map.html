@@ -2,53 +2,35 @@
 {% load static %}
 
 {% block title %}Space Agencies Map — Race2Space{% endblock %}
+{% block meta_description %}An interactive world map of developing-country space agencies — explore programs across Africa, Asia, the Middle East and Latin America.{% endblock %}
 
 {% block content %}
-<div class="map-intro">
-    <p class="eyebrow">Interactive map</p>
-    <h1 class="section-title">Space Agencies of Developing Countries</h1>
-    <p>Each pin marks a space agency making significant strides despite economic and technological challenges. Explore agencies across Algeria, Angola, Argentina, Azerbaijan, Bahrain, Brazil, China, Egypt, India, Indonesia, Iran, Kenya, Mexico, Pakistan, Peru, the Philippines, South Africa, Türkiye, Ukraine, Venezuela, and Zimbabwe.</p>
-</div>
-
-<div class="map-frame panel">
-    <div id="map"></div>
-</div>
+<section class="dark">
+  <div class="section-inner">
+    <span class="eyebrow">Interactive map</span>
+    <h1 class="map-h">Space Agencies of Developing Countries</h1>
+    <p class="map-sub mono">Each marker is a national space agency. Select one for the full profile.</p>
+    <div class="map-frame"><div id="map"></div></div>
+  </div>
+</section>
 
 <style>
-    .map-intro { max-width: 70ch; margin-bottom: 1.6rem; }
-    .map-intro .eyebrow { display: block; margin-bottom: 0.5rem; }
-    .map-intro p { color: var(--text-soft); }
-    .map-frame { padding: 0.6rem; overflow: hidden; }
-    #map { height: 600px; width: 100%; border-radius: 12px; }
-    .leaflet-popup-content-wrapper { border-radius: 12px; }
-    .leaflet-popup-content { font-family: var(--sans); text-align: center; }
-    .leaflet-popup-content b { font-family: var(--serif); font-size: 1.05rem; }
+  .map-h{font-size:clamp(2rem,5vw,3.6rem);max-width:22ch}
+  .map-sub{max-width:60ch;margin:1rem 0 1.6rem;text-transform:uppercase;font-size:.72rem;letter-spacing:.04em;color:var(--white-mute)}
+  .map-frame{border:1px solid var(--line-d);padding:.5rem}
+  #map{height:600px;width:100%;background:#0b0f1a}
+  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#131317;color:#fff;border-radius:0}
+  .leaflet-popup-content{font-family:var(--mono);text-align:center}
+  .leaflet-popup-content b{font-family:var(--disp);font-weight:400;font-size:1.1rem}
 </style>
 
 <script>
-    var map = L.map('map').setView([20, 0], 2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    var spaceAgencies = [
-        {% for agency in agencies %}
-        {
-            "name": "{{ agency.agency_name|escapejs }}",
-            "lat": {{ agency.latitude }},
-            "lng": {{ agency.longitude }},
-            "flag": "{{ agency.flag.url }}",
-            "profileUrl": "{% url 'agency_detail' agency.pk %}"
-        }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ];
-
-    spaceAgencies.forEach(function (agency) {
-        var popupContent =
-            '<b>' + agency.name + '</b><br>' +
-            '<img src="' + agency.flag + '" alt="' + agency.name + ' flag" style="width:110px;display:block;margin:8px auto;border-radius:4px;"><br>' +
-            '<a class="btn btn-primary" href="' + agency.profileUrl + '" style="display:inline-block;">View Profile</a>';
-        L.marker([agency.lat, agency.lng]).addTo(map).bindPopup(popupContent);
-    });
+  var map=L.map('map',{attributionControl:false}).setView([20,0],2);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:8}).addTo(map);
+  var A=[{% for a in agencies %}{"name":"{{ a.agency_name|escapejs }}","lat":{{ a.latitude }},"lng":{{ a.longitude }},"flag":"{{ a.flag.url }}","url":"{% url 'agency_detail' a.pk %}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+  A.forEach(function(a){
+    L.circleMarker([a.lat,a.lng],{radius:6,color:'#F2894A',weight:2,fillColor:'#F2894A',fillOpacity:.55}).addTo(map)
+     .bindPopup('<b>'+a.name+'</b><br><img src="'+a.flag+'" alt="" style="width:100px;display:block;margin:8px auto;"><br><a class="btn btn-fill" href="'+a.url+'" style="display:inline-block;font-size:.7rem;padding:.4rem 1rem;">View Profile</a>');
+  });
 </script>
 {% endblock %}

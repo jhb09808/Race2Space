@@ -2,125 +2,76 @@
 {% load static %}
 
 {% block title %}Space & Astronomy News — Race2Space{% endblock %}
-{% block meta_description %}Live space and astronomy news — the latest launches, missions and discoveries from across the space industry, updated continuously in a clean newsroom feed.{% endblock %}
+{% block meta_description %}Live space and astronomy news — the latest launches, missions and discoveries from across the space industry, updated continuously.{% endblock %}
 
 {% block content %}
-<header class="masthead">
-    <div class="masthead-rule"></div>
-    <div class="masthead-bar">
-        <span class="mono edition">SPACE &amp; ASTRONOMY</span>
-        <span class="mono edition">{{ today|date:"l, F j, Y" }}</span>
-    </div>
-    <h1 class="masthead-title">The Race2Space Dispatch</h1>
-    <p class="masthead-sub">Live dispatches from across the cosmos — the latest launches, missions and discoveries, updated as they happen.</p>
-    <div class="masthead-rule double"></div>
-</header>
-
-<div id="newsFront">
-    <p class="news-status mono" id="newsStatus">Loading the latest space headlines…</p>
-</div>
+<section class="paper">
+  <div class="section-inner">
+    <header class="nm-head">
+      <div><span class="eyebrow">Live feed &middot; {{ today|date:"M j, Y" }}</span>
+      <h1 class="nm-title">Newsroom</h1></div>
+      <span class="mono-label">Space &amp; Astronomy</span>
+    </header>
+    <div class="nm-rule"></div>
+    <div id="newsFront"><p class="news-status mono">Loading the latest space headlines…</p></div>
+  </div>
+</section>
 
 <style>
-    .masthead { margin-bottom: 2rem; }
-    .masthead-rule { height: 2px; background: var(--text); opacity: 0.85; }
-    .masthead-rule.double { height: 4px; border-top: 1px solid var(--text); border-bottom: 3px double var(--text); background: transparent; margin-top: 0.4rem; }
-    .masthead-bar { display: flex; justify-content: space-between; padding: 0.5rem 0; }
-    .edition { font-size: 0.7rem; letter-spacing: 0.16em; color: var(--text-soft); }
-    .masthead-title { font-size: clamp(2.2rem, 6vw, 4rem); text-align: center; margin: 0.4rem 0 0.3rem; letter-spacing: -0.02em; }
-    .masthead-sub { text-align: center; color: var(--text-soft); max-width: 60ch; margin: 0 auto 0.8rem; font-style: italic; }
-
-    .news-status { color: var(--text-soft); text-align: center; padding: 3rem 1rem; }
-
-    .news-front { display: grid; grid-template-columns: 1fr 340px; gap: clamp(1.5rem, 4vw, 3rem); }
-    @media (max-width: 900px) { .news-front { grid-template-columns: 1fr; } }
-
-    .kicker { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--accent); display: inline-block; margin-bottom: 0.5rem; }
-    .byline { font-size: 0.78rem; color: var(--text-soft); margin: 0.5rem 0 0; }
-
-    .lead { padding-bottom: 1.8rem; border-bottom: 2px solid var(--line); margin-bottom: 1.8rem; }
-    .lead-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); margin-bottom: 1rem; background: var(--ground-2); }
-    .lead-headline { font-family: var(--serif); font-weight: 700; font-size: clamp(1.6rem, 3.6vw, 2.6rem); line-height: 1.12; margin: 0; }
-    .lead-headline a { color: var(--text); text-decoration: none; }
-    .lead-headline a:hover { color: var(--accent); }
-    .lead-summary { color: var(--text-soft); margin: 0.7rem 0 0; }
-
-    .secondary { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
-    @media (max-width: 560px) { .secondary { grid-template-columns: 1fr; } }
-    .story { display: flex; flex-direction: column; }
-    .story-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); margin-bottom: 0.7rem; background: var(--ground-2); }
-    .story-headline { font-family: var(--serif); font-size: 1.15rem; line-height: 1.2; margin: 0; }
-    .story-headline a { color: var(--text); text-decoration: none; }
-    .story-headline a:hover { color: var(--accent); }
-
-    .news-side { padding-left: clamp(0px, 2vw, 1.6rem); border-left: 1px solid var(--line); }
-    @media (max-width: 900px) { .news-side { border-left: 0; padding-left: 0; border-top: 2px solid var(--line); padding-top: 1.5rem; } }
-    .side-head { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text); padding-bottom: 0.6rem; border-bottom: 2px solid var(--accent); margin-bottom: 0.4rem; }
-    .latest { list-style: none; counter-reset: latest; margin: 0; padding: 0; }
-    .latest li { counter-increment: latest; position: relative; padding: 0.9rem 0 0.9rem 2.2rem; border-bottom: 1px solid var(--line); }
-    .latest li::before { content: counter(latest); position: absolute; left: 0; top: 0.9rem; font-family: var(--mono); font-weight: 700; font-size: 0.95rem; color: var(--text-soft); }
-    .latest li a { display: block; color: var(--text); text-decoration: none; font-weight: 500; line-height: 1.3; font-size: 0.95rem; }
-    .latest li a:hover { color: var(--accent); }
-    .latest-meta { display: block; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.3rem; color: var(--text-soft); }
+  .nm-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.5rem;flex-wrap:wrap}
+  .nm-title{font-size:clamp(2.6rem,7vw,5rem)}
+  .nm-rule{height:3px;background:var(--ink);margin:1.4rem 0 2.4rem}
+  .news-status{color:var(--paper-mute);padding:3rem 0;text-align:center}
+  .news-front{display:grid;grid-template-columns:1fr 320px;gap:clamp(1.5rem,4vw,3rem)}
+  @media(max-width:900px){.news-front{grid-template-columns:1fr}}
+  .kicker{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--orange-deep);display:inline-block;margin-bottom:.5rem}
+  .byline{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--paper-mute);margin-top:.5rem}
+  .lead{padding-bottom:1.8rem;border-bottom:2px solid var(--ink);margin-bottom:1.8rem}
+  .lead-img{width:100%;aspect-ratio:16/9;object-fit:cover;border:1px solid var(--line);margin-bottom:1rem;background:var(--paper-2)}
+  .lead-headline{font-family:var(--disp);font-size:clamp(1.6rem,3.6vw,2.8rem);line-height:1;margin:0}
+  .lead-headline a{color:var(--ink);text-decoration:none}.lead-headline a:hover{color:var(--orange-deep)}
+  .lead-summary{color:var(--ink-soft);margin:.7rem 0 0;max-width:60ch}
+  .secondary{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem}
+  @media(max-width:560px){.secondary{grid-template-columns:1fr}}
+  .story-img{width:100%;aspect-ratio:16/9;object-fit:cover;border:1px solid var(--line);margin-bottom:.7rem;background:var(--paper-2)}
+  .story-headline{font-family:var(--disp);font-size:1.2rem;line-height:1.05;margin:0}
+  .story-headline a{color:var(--ink);text-decoration:none}.story-headline a:hover{color:var(--orange-deep)}
+  .news-side{border-left:1px solid var(--line);padding-left:1.5rem}
+  @media(max-width:900px){.news-side{border-left:0;padding-left:0;border-top:2px solid var(--ink);padding-top:1.4rem}}
+  .side-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;border-bottom:2px solid var(--orange);padding-bottom:.6rem;margin-bottom:.3rem}
+  .latest{list-style:none;counter-reset:l}
+  .latest li{counter-increment:l;position:relative;padding:.9rem 0 .9rem 2rem;border-bottom:1px solid var(--line)}
+  .latest li::before{content:counter(l,decimal-leading-zero);position:absolute;left:0;top:.9rem;font-family:var(--mono);font-weight:600;font-size:.8rem;color:var(--orange-deep)}
+  .latest li a{color:var(--ink);text-decoration:none;font-family:var(--disp);font-size:1rem;line-height:1.1;display:block}
+  .latest li a:hover{color:var(--orange-deep)}
+  .latest-meta{display:block;font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;color:var(--paper-mute);margin-top:.35rem}
 </style>
 
 {% verbatim %}
 <script>
-(function () {
-    var API = 'https://api.spaceflightnewsapi.net/v4/articles/?limit=16&ordering=-published_at';
-    var front = document.getElementById('newsFront');
-
-    function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
-    function fmtDate(iso) {
-        try { return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); }
-        catch (e) { return ''; }
-    }
-    function trim(text, n) {
-        if (!text) return '';
-        text = text.trim();
-        return text.length > n ? text.slice(0, n).replace(/\s+\S*$/, '') + '…' : text;
-    }
-
-    function render(items) {
-        var lead = items[0], secondary = items.slice(1, 5), latest = items.slice(5, 15);
-
-        var leadImg = lead.image_url ? '<img class="lead-img" src="' + esc(lead.image_url) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '';
-        var leadHtml =
-            '<article class="lead">' + leadImg +
-            '<span class="kicker">' + esc(lead.news_site) + '</span>' +
-            '<h2 class="lead-headline"><a href="' + esc(lead.url) + '" target="_blank" rel="noopener">' + esc(lead.title) + '</a></h2>' +
-            '<p class="lead-summary">' + esc(trim(lead.summary, 220)) + '</p>' +
-            '<p class="byline mono">' + esc(lead.news_site) + ' · ' + fmtDate(lead.published_at) + '</p>' +
-            '</article>';
-
-        var secHtml = '<div class="secondary">' + secondary.map(function (a) {
-            var img = a.image_url ? '<img class="story-img" src="' + esc(a.image_url) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '';
-            return '<article class="story">' + img +
-                '<span class="kicker">' + esc(a.news_site) + '</span>' +
-                '<h3 class="story-headline"><a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.title) + '</a></h3>' +
-                '<p class="byline mono">' + fmtDate(a.published_at) + '</p>' +
-                '</article>';
-        }).join('') + '</div>';
-
-        var latestHtml = '<aside class="news-side"><h4 class="side-head">Latest</h4><ol class="latest">' +
-            latest.map(function (a) {
-                return '<li><a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.title) + '</a>' +
-                    '<span class="latest-meta">' + esc(a.news_site) + ' · ' + fmtDate(a.published_at) + '</span></li>';
-            }).join('') + '</ol></aside>';
-
-        front.innerHTML = '<div class="news-front"><main>' + leadHtml + secHtml + '</main>' + latestHtml + '</div>';
-    }
-
-    fetch(API)
-        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-        .then(function (j) {
-            var items = j.results || [];
-            if (!items.length) throw 0;
-            render(items);
-        })
-        .catch(function () {
-            document.getElementById('newsStatus').textContent =
-                'The live news feed is temporarily unavailable — please refresh in a moment.';
-        });
+(function(){
+  var API='https://api.spaceflightnewsapi.net/v4/articles/?limit=16&ordering=-published_at';
+  var front=document.getElementById('newsFront');
+  function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
+  function fdate(iso){try{return new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});}catch(e){return'';}}
+  function trim(t,n){if(!t)return'';t=t.trim();return t.length>n?t.slice(0,n).replace(/\s+\S*$/,'')+'…':t;}
+  function render(items){
+    var lead=items[0],sec=items.slice(1,5),latest=items.slice(5,15);
+    var li=lead.image_url?'<img class="lead-img" src="'+esc(lead.image_url)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'';
+    var leadHtml='<article class="lead">'+li+'<span class="kicker">'+esc(lead.news_site)+'</span>'+
+      '<h2 class="lead-headline"><a href="'+esc(lead.url)+'" target="_blank" rel="noopener">'+esc(lead.title)+'</a></h2>'+
+      '<p class="lead-summary">'+esc(trim(lead.summary,220))+'</p>'+
+      '<p class="byline">'+esc(lead.news_site)+' · '+fdate(lead.published_at)+'</p></article>';
+    var secHtml='<div class="secondary">'+sec.map(function(a){var im=a.image_url?'<img class="story-img" src="'+esc(a.image_url)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'';
+      return '<article class="story">'+im+'<span class="kicker">'+esc(a.news_site)+'</span>'+
+        '<h3 class="story-headline"><a href="'+esc(a.url)+'" target="_blank" rel="noopener">'+esc(a.title)+'</a></h3>'+
+        '<p class="byline">'+fdate(a.published_at)+'</p></article>';}).join('')+'</div>';
+    var latestHtml='<aside class="news-side"><h4 class="side-head">Latest</h4><ol class="latest">'+
+      latest.map(function(a){return '<li><a href="'+esc(a.url)+'" target="_blank" rel="noopener">'+esc(a.title)+'</a><span class="latest-meta">'+esc(a.news_site)+' · '+fdate(a.published_at)+'</span></li>';}).join('')+'</ol></aside>';
+    front.innerHTML='<div class="news-front"><main>'+leadHtml+secHtml+'</main>'+latestHtml+'</div>';
+  }
+  fetch(API).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var it=j.results||[];if(!it.length)throw 0;render(it);})
+    .catch(function(){document.getElementById('newsFront').innerHTML='<p class="news-status mono">The live news feed is temporarily unavailable — please refresh in a moment.</p>';});
 })();
 </script>
 {% endverbatim %}
