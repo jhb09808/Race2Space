@@ -7,8 +7,8 @@
 
 {% block content %}
 
-<!-- HERO -->
-<header class="hero dark">
+<!-- HERO (stacking panel — stays put while the next panel slides up over it) -->
+<header class="hero dark spanel">
   <canvas data-stars class="hero-stars"></canvas>
   <video class="hero-video" autoplay muted loop playsinline>
     <source src="{% static 'home/video/hero.mp4' %}" type="video/mp4">
@@ -23,62 +23,59 @@
       <a class="btn" href="{% url 'dashboard' %}">Live Dashboard</a>
     </div>
   </div>
+  <span class="hero-cue mono">&#9662; Scroll</span>
 </header>
 
-<!-- STATEMENT + STATS -->
-<section class="paper">
-  <div class="section-inner">
-    <div class="stmt-wrap reveal">
-      <h2 class="stmt">A live record of how developing nations are reaching <span class="orange">beyond our planet.</span></h2>
-      <span class="mono-label">[ Index ]</span>
-    </div>
-    <div class="stats">
-      <div class="stat reveal"><div class="n" data-count="{{ num_agencies }}">0</div><div class="l">Nations profiled</div></div>
-      <div class="stat reveal"><div class="n" data-count="{{ num_objects }}">0</div><div class="l">Objects launched</div></div>
-      <div class="stat reveal"><div class="n" data-count="34">0</div><div class="l">Agencies indexed</div></div>
-      <div class="stat reveal"><div class="n" data-count="3">0</div><div class="l">Continents</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- INDEX CARDS -->
-<section class="paper" style="padding-top:0">
-  <div class="section-inner">
-    <div class="cards">
-      <a class="card idx" href="{% url 'agency_list' %}">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4v16M6 7c3 2 9 2 12 0M6 17c3-2 9-2 12 0"/></svg>
-        <div class="num">01</div><h3>Agency<br>Profiles</h3><p>In-depth profiles of {{ num_agencies }} developing-country space agencies — history, missions &amp; data.</p><span class="go mono">Open &#9656;</span>
-      </a>
-      <a class="card idx" href="{% url 'dashboard' %}">
-        <svg class="ico" viewBox="0 0 24 24" fill="currentColor" shape-rendering="crispEdges"><rect x="9" y="9" width="6" height="6"/><rect x="2" y="10" width="5" height="4"/><rect x="17" y="10" width="5" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="10" y="18" width="4" height="4"/></svg>
-        <div class="num">02</div><h3>Live<br>Dashboard</h3><p>Real-time satellite tracking, launches &amp; agency budget analytics across 34 agencies.</p><span class="go mono">Open &#9656;</span>
-      </a>
-      <a class="card idx" href="{% url 'timeline_view' %}">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l4 2"/></svg>
-        <div class="num">03</div><h3>History<br>Timeline</h3><p>An interactive journey through the milestones that carried nations into orbit.</p><span class="go mono">Open &#9656;</span>
-      </a>
+<!-- INDEX (pinned scrub — stats appear, then the cards reveal one by one as you scroll) -->
+<section class="index-scrub">
+  <div class="index-pin">
+    <div class="section-inner idx-inner">
+      <div class="stmt-wrap">
+        <h2 class="stmt">A live record of how developing nations are reaching <span class="orange">beyond our planet.</span></h2>
+        <span class="mono-label">[ Index ]</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n" data-count="{{ num_agencies }}">0</div><div class="l">Nations profiled</div></div>
+        <div class="stat"><div class="n" data-count="{{ num_objects }}">0</div><div class="l">Objects launched</div></div>
+        <div class="stat"><div class="n" data-count="34">0</div><div class="l">Agencies indexed</div></div>
+        <div class="stat"><div class="n" data-count="3">0</div><div class="l">Continents</div></div>
+      </div>
+      <div class="cards">
+        <a class="card idx" href="{% url 'agency_list' %}">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4v16M6 7c3 2 9 2 12 0M6 17c3-2 9-2 12 0"/></svg>
+          <div class="num">01</div><h3>Agency Profiles</h3><p>In-depth profiles of {{ num_agencies }} developing-country space agencies.</p><span class="go mono">Open &#9656;</span>
+        </a>
+        <a class="card idx" href="{% url 'dashboard' %}">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor" shape-rendering="crispEdges"><rect x="9" y="9" width="6" height="6"/><rect x="2" y="10" width="5" height="4"/><rect x="17" y="10" width="5" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="10" y="18" width="4" height="4"/></svg>
+          <div class="num">02</div><h3>Live Dashboard</h3><p>Real-time satellite tracking, launches &amp; budget analytics.</p><span class="go mono">Open &#9656;</span>
+        </a>
+        <a class="card idx" href="{% url 'timeline_view' %}">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l4 2"/></svg>
+          <div class="num">03</div><h3>History Timeline</h3><p>An interactive journey through the milestones that reached orbit.</p><span class="go mono">Open &#9656;</span>
+        </a>
+      </div>
+      <span class="idx-cue mono">&#9662; Keep scrolling</span>
     </div>
   </div>
 </section>
 
-<!-- FULL-VIEWPORT VIDEO -->
-<section class="videosec dark">
+<!-- FULL-VIEWPORT VIDEO (stacking panel) -->
+<section class="videosec dark spanel">
   <canvas data-stars class="vid-stars"></canvas>
   <video autoplay muted loop playsinline>
     <source src="{% static 'home/video/feature.mp4' %}" type="video/mp4">
   </video>
   <div class="video-overlay"></div>
-  <div class="video-center reveal">
+  <div class="video-center">
     <div class="disp vw">REACHING<br><span class="orange">BEYOND EARTH</span></div>
     <div class="mono-label" style="color:var(--white-mute);margin-top:1.2rem">Developing nations, one frontier</div>
   </div>
-  <span class="scrollcue mono">&#9662; Scroll</span>
 </section>
 
-<!-- COSMOS + FLAGS -->
-<section class="cosmos dark">
+<!-- COSMOS + FLAGS (stacking panel) -->
+<section class="cosmos dark spanel">
   <canvas data-stars class="cos-stars"></canvas>
-  <div class="section-inner cos-inner reveal">
+  <div class="section-inner cos-inner">
     <h2 class="cos-big">{{ num_agencies }} nations. {{ num_objects }}+ objects. One frontier: pushing the boundaries of <span class="orange">space, science &amp; human curiosity.</span></h2>
     <p class="mono-label" style="color:var(--white-mute);margin-top:2.2rem">Indexing space agencies across the Global South</p>
     {% if agencies %}
@@ -91,8 +88,8 @@
   </div>
 </section>
 
-<!-- FAQ -->
-<section class="paper">
+<!-- FAQ (final panel — slides up over cosmos) -->
+<section class="paper faq-panel">
   <div class="section-inner faq-grid">
     <div class="reveal">
       <h2 class="faq-h">Have some<br>queries?</h2>
@@ -119,61 +116,81 @@
 </script>
 
 <style>
-  .hero{position:relative;min-height:92vh;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;padding:clamp(1.5rem,4vw,3rem)}
+  /* ---------- HERO ---------- */
+  .hero{position:sticky;top:0;min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;padding:clamp(1.5rem,4vw,3rem)}
   .hero-stars{position:absolute;inset:0;z-index:0}
   .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
   .hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(11,11,12,.55) 0%,rgba(11,11,12,.35) 45%,rgba(11,11,12,.85) 100%)}
   .hero-mid,.hero-lower{position:relative;z-index:2;max-width:var(--wrap);margin:0 auto;width:100%}
-  .hero-mid{padding-top:2.5rem}
+  .hero-mid{padding-top:3.5rem}
   .hero-mid p{max-width:44ch;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;color:var(--white-soft);line-height:1.9}
   .hero-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-  .wordmark{font-size:clamp(3.2rem,17vw,14rem);color:var(--orange);margin-top:-.05em;will-change:transform}
+  .wordmark{font-size:clamp(3.2rem,17vw,14rem);color:var(--orange);margin-top:-.05em}
   .hero-cta{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
+  .hero-cue{position:absolute;bottom:1.1rem;left:50%;transform:translateX(-50%);z-index:2;font-size:.62rem;letter-spacing:.2em;color:var(--white-mute)}
   @keyframes up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
   @media(prefers-reduced-motion:no-preference){.hero-mid{animation:up .7s ease both .1s}.hero-row{animation:up .7s ease both .25s}.wordmark{animation:up .9s cubic-bezier(.2,.8,.2,1) both .35s}.hero-cta{animation:up .7s ease both .6s}}
 
-  .stmt-wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap}
-  .stmt{font-size:clamp(1.8rem,4.4vw,3.4rem);max-width:20ch;line-height:1.02}
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:clamp(2.5rem,6vw,4.5rem)}
+  /* ---------- INDEX SCRUB (pinned reveal) ---------- */
+  .index-scrub{position:relative;background:var(--paper)}
+  .index-pin{min-height:100vh;display:flex;align-items:center;padding:clamp(4.5rem,9vw,7rem) 0 clamp(2rem,5vw,3rem)}
+  .idx-inner{width:100%}
+  .stmt-wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;align-items:flex-start}
+  .stmt{font-size:clamp(1.6rem,3.8vw,3rem);max-width:20ch;line-height:1.02}
+  .stmt-wrap,.stats{opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+  .idx-inner.lit .stmt-wrap,.idx-inner.lit .stats{opacity:1;transform:none}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:clamp(1.8rem,4vw,3rem)}
   @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
   .stat{display:flex;flex-direction:column;align-items:center}
-  .stat .n{font-family:var(--disp);font-size:clamp(2.6rem,7vw,5rem);color:var(--orange-deep);line-height:.9;font-variant-numeric:tabular-nums}
-  .stat .l{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;font-size:.66rem;color:var(--paper-mute);margin-top:.7rem;text-align:center}
+  .stat .n{font-family:var(--disp);font-size:clamp(2.2rem,6vw,4.4rem);color:var(--orange-deep);line-height:.9;font-variant-numeric:tabular-nums}
+  .stat .l{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;font-size:.64rem;color:var(--paper-mute);margin-top:.6rem;text-align:center}
 
-  .cards{display:grid;grid-template-columns:repeat(3,1fr)}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(2rem,4.5vw,3.2rem)}
   @media(max-width:820px){.cards{grid-template-columns:1fr}}
-  .card.idx{display:flex;flex-direction:column;align-items:center;text-align:center;padding:2.4rem 1.6rem;margin-left:-1px;margin-top:-1px;text-decoration:none;color:var(--ink);
-    opacity:0;transform:translateY(32px);transition:opacity .6s ease,transform .6s ease,background .15s,border-color .15s}
-  .cards.in .card.idx{opacity:1;transform:none}
-  .cards.in .card.idx:nth-child(1){transition-delay:.05s}
-  .cards.in .card.idx:nth-child(2){transition-delay:.22s}
-  .cards.in .card.idx:nth-child(3){transition-delay:.39s}
+  .card.idx{display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(1.4rem,2.6vw,2rem) 1.4rem;margin-left:-1px;margin-top:-1px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);
+    opacity:0;transform:translateY(50px) scale(.97);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1),background .15s,border-color .15s}
+  .card.idx.in{opacity:1;transform:none}
   .card.idx:hover{background:#fff;border-color:var(--orange)}
-  .card.idx .ico{width:74px;height:74px;margin-bottom:1.4rem;color:var(--ink)}
-  .card.idx .num{font-family:var(--disp);font-size:1.8rem;color:var(--orange-deep)}
-  .card.idx h3{font-size:1.5rem;margin:1rem 0}
-  .card.idx p{font-family:var(--mono);text-transform:uppercase;font-size:.68rem;letter-spacing:.05em;color:var(--paper-mute);line-height:1.9}
-  .card.idx .go{margin-top:1.2rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--orange-deep)}
+  .card.idx .ico{width:clamp(48px,5vw,62px);height:clamp(48px,5vw,62px);margin-bottom:1rem;color:var(--ink)}
+  .card.idx .num{font-family:var(--disp);font-size:1.6rem;color:var(--orange-deep)}
+  .card.idx h3{font-size:1.35rem;margin:.7rem 0}
+  .card.idx p{font-family:var(--mono);text-transform:uppercase;font-size:.64rem;letter-spacing:.05em;color:var(--paper-mute);line-height:1.8}
+  .card.idx .go{margin-top:1rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--orange-deep)}
+  .idx-cue{display:block;text-align:center;margin-top:1.6rem;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-mute);transition:opacity .4s}
+  .idx-cue.gone{opacity:0}
 
-  .videosec{position:relative;height:100vh;min-height:520px;overflow:hidden;display:grid;place-items:center;padding:0;background:#050507}
+  /* desktop: pin the index and let scroll scrub the reveal */
+  @media(min-width:820px){
+    .index-scrub{height:400vh}
+    .index-pin{position:sticky;top:0;height:100vh;overflow:hidden}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .stmt-wrap,.stats,.card.idx{opacity:1;transform:none}
+    .index-scrub{height:auto}.index-pin{position:relative;height:auto}
+  }
+
+  /* ---------- VIDEO PANEL ---------- */
+  .videosec{position:sticky;top:0;height:100vh;min-height:520px;overflow:hidden;display:grid;place-items:center;padding:0;background:#050507}
   .videosec video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
   .vid-stars{position:absolute;inset:0;z-index:0}
   .video-overlay{position:absolute;inset:0;z-index:2;background:rgba(5,5,7,.45)}
   .video-center{position:relative;z-index:3;text-align:center;padding:1rem}
   .vw{font-size:clamp(2.4rem,9vw,7rem);color:#fff;line-height:.9}
-  .scrollcue{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:3;font-size:.64rem;letter-spacing:.2em;color:var(--white-mute)}
 
-  .cosmos{position:relative;text-align:center;overflow:hidden}
+  /* ---------- COSMOS PANEL ---------- */
+  .cosmos{position:sticky;top:0;min-height:100vh;display:flex;align-items:center;text-align:center;overflow:hidden;background:var(--ink)}
   .cos-stars{position:absolute;inset:0;z-index:0}
-  .cos-inner{position:relative;z-index:2}
+  .cos-inner{position:relative;z-index:2;width:100%}
   .cos-big{font-size:clamp(1.6rem,4.2vw,3.2rem);max-width:24ch;margin:0 auto;line-height:1.05}
-  .flags{display:flex;flex-wrap:wrap;justify-content:center;gap:1.6rem 2rem;margin-top:2.6rem}
+  .flags{display:flex;flex-wrap:wrap;justify-content:center;gap:1.4rem 2rem;margin-top:2.4rem}
   .flag{display:flex;flex-direction:column;align-items:center;gap:.45rem;text-decoration:none;filter:grayscale(1) brightness(.8);transition:filter .2s}
   .flag:hover{filter:none}
-  .flag img{height:30px;border:1px solid #333}
-  .flag span{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;color:var(--white-mute)}
+  .flag img{height:28px;border:1px solid #333}
+  .flag span{font-family:var(--mono);font-size:.56rem;letter-spacing:.08em;color:var(--white-mute)}
 
-  .faq-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:clamp(2rem,6vw,5rem)}
+  /* ---------- FAQ PANEL (final) ---------- */
+  .faq-panel{position:relative;z-index:1;background:var(--paper);min-height:100vh;display:flex;align-items:center}
+  .faq-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:clamp(2rem,6vw,5rem);width:100%}
   @media(max-width:820px){.faq-grid{grid-template-columns:1fr}}
   .faq-h{font-size:clamp(3rem,8vw,5.5rem)}
   .faq-lead{text-transform:uppercase;font-size:.74rem;letter-spacing:.05em;color:var(--paper-mute);line-height:2;margin:1.6rem 0}
@@ -187,10 +204,46 @@
 </style>
 
 <script>
-  // FAQ tag + light parallax
+function r2sHomeInit(){
+  // FAQ expand/collapse label
   document.querySelectorAll('.acc details').forEach(function(d){var t=d.querySelector('.tag');function u(){t.textContent=d.open?'Collapse':'Expand';}d.addEventListener('toggle',u);u();});
-  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    window.addEventListener('scroll',function(){var y=scrollY;var w=document.querySelector('.wordmark');if(w&&y<1000)w.style.transform='translateX('+(y*-0.05)+'px)';},{passive:true});
-  }
+
+  // Index: stats appear, then cards reveal one-by-one on scroll
+  (function(){
+    var RM=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var scrub=document.querySelector('.index-scrub');
+    var inner=document.querySelector('.idx-inner');
+    var cue=document.querySelector('.idx-cue');
+    var cards=[].slice.call(document.querySelectorAll('.index-pin .card.idx'));
+    var desktop=window.matchMedia('(min-width:820px)');
+    function litOn(){if(inner&&!inner.classList.contains('lit')){inner.classList.add('lit');if(window.r2sCountUp)document.querySelectorAll('.idx-inner [data-count]').forEach(window.r2sCountUp);}}
+    function setCue(){if(cue)cue.classList.toggle('gone',cards.every(function(c){return c.classList.contains('in');}));}
+
+    if(RM){litOn();cards.forEach(function(c){c.classList.add('in');});if(cue)cue.classList.add('gone');return;}
+
+    if(desktop.matches&&scrub){
+      var TH=[0.30,0.55,0.80];
+      function tick(){
+        var r=scrub.getBoundingClientRect();
+        var total=scrub.offsetHeight-window.innerHeight;
+        var p=total>0?Math.min(1,Math.max(0,(-r.top)/total)):0;
+        if(p>0.015||r.top<window.innerHeight*0.55)litOn();
+        cards.forEach(function(c,i){if(p>=TH[i])c.classList.add('in');else c.classList.remove('in');});
+        setCue();
+      }
+      window.addEventListener('scroll',tick,{passive:true});
+      window.addEventListener('resize',tick);
+      tick();
+    } else {
+      // mobile / narrow: reveal on scroll into view
+      litOn();
+      if('IntersectionObserver' in window){
+        var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');o.unobserve(e.target);setCue();}});},{threshold:.35});
+        cards.forEach(function(c){o.observe(c);});
+      } else {cards.forEach(function(c){c.classList.add('in');});setCue();}
+    }
+  })();
+}
+if(document.readyState!=='loading')r2sHomeInit();else document.addEventListener('DOMContentLoaded',r2sHomeInit);
 </script>
 {% endblock %}

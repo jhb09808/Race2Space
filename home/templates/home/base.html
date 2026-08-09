@@ -54,7 +54,7 @@
   --wrap:1320px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{max-width:100%;overflow-x:hidden}
+html,body{max-width:100%;overflow-x:clip}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh}
 img,svg,video,canvas,iframe{max-width:100%}
 canvas[data-stars]{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
@@ -94,7 +94,8 @@ h4,h5,h6{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em}
 .dark .btn-fill{background:var(--white);border-color:var(--white);color:var(--ink)}
 
 /* nav */
-.navbar{background:var(--ink);color:var(--white);border-bottom:1px solid var(--line-d);position:sticky;top:0;z-index:1000}
+.navbar{background:var(--ink);color:var(--white);border-bottom:1px solid var(--line-d);position:sticky;top:0;z-index:1000;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.navbar.nav-hidden{transform:translateY(-100%)}
 .nav-inner{max-width:var(--wrap);margin:0 auto;padding:.9rem clamp(1.1rem,4vw,3rem);display:flex;align-items:center;justify-content:space-between;gap:1.2rem}
 .navbar-brand{display:flex;align-items:center;gap:.7rem;text-decoration:none;color:var(--white)}
 .navbar-brand .logo{width:34px;height:34px;border:1px solid #3a3a40;display:grid;place-items:center;background:#111;flex:0 0 auto}
@@ -122,6 +123,9 @@ h4,h5,h6{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em}
 main{flex:1}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 clamp(1.1rem,4vw,3rem)}
 section{padding:clamp(3rem,7vw,6rem) clamp(1.1rem,4vw,3rem)}
+section.paper{background:var(--paper)}
+/* stacking scroll panels (opaque, full-height, sticky so later panels slide up over earlier) */
+.spanel{position:sticky;top:0;min-height:100vh}
 .section-inner{max-width:var(--wrap);margin:0 auto}
 .eyebrow{font-family:var(--mono);text-transform:uppercase;letter-spacing:.16em;font-size:.72rem;color:var(--orange-deep);display:inline-block;margin-bottom:1rem}
 .dark .eyebrow{color:var(--orange)}
@@ -210,6 +214,19 @@ footer.site-footer a{color:var(--orange)}
         var t=document.getElementById('navToggle'),m=document.getElementById('navMenu');
         if(t&&m){t.addEventListener('click',function(){var o=m.classList.toggle('open');t.setAttribute('aria-expanded',o?'true':'false');});
             m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){m.classList.remove('open');t.setAttribute('aria-expanded','false');});});}
+        // nav auto-hide: hide while scrolling, reveal on mouse move / hover / near top / touch
+        (function(){var nav=document.querySelector('.navbar');if(!nav)return;var idle;
+            function atTop(){return (window.pageYOffset||document.documentElement.scrollTop)<70;}
+            function menuOpen(){return m&&m.classList.contains('open');}
+            function show(auto){nav.classList.remove('nav-hidden');clearTimeout(idle);
+                if(auto&&!atTop())idle=setTimeout(function(){if(!nav.matches(':hover')&&!menuOpen())nav.classList.add('nav-hidden');},1900);}
+            function hide(){if(!atTop()&&!nav.matches(':hover')&&!menuOpen())nav.classList.add('nav-hidden');}
+            window.addEventListener('scroll',function(){if(atTop())show(false);else hide();},{passive:true});
+            window.addEventListener('mousemove',function(){show(true);},{passive:true});
+            window.addEventListener('touchstart',function(){show(true);},{passive:true});
+            nav.addEventListener('mouseenter',function(){show(false);});
+            nav.addEventListener('mouseleave',function(){show(true);});
+        })();
         // active link
         var path=location.pathname;
         document.querySelectorAll('.navbar-nav .nav-link').forEach(function(a){var h=a.getAttribute('href');
@@ -229,13 +246,14 @@ footer.site-footer a{color:var(--orange)}
         function watch(el){if(io)io.observe(el);else fire(el);}
         // auto-tag: cascade grid/list children, slide each section up
         var STAG='.stats,.flags,.ms-list,.acc,.idx-table tbody,.tl-legend,.news-grid,.forum-list';
-        document.querySelectorAll(STAG).forEach(function(c){var n=0;[].forEach.call(c.children,function(k){if(k.tagName==='THEAD')return;k.classList.add('reveal');k.style.setProperty('--rd',Math.min(n,9)*70+'ms');n++;});});
-        document.querySelectorAll('section:not(.hero)').forEach(function(sec){sec.classList.add('sect-up');
+        document.querySelectorAll(STAG).forEach(function(c){if(c.closest('.index-scrub'))return;var n=0;[].forEach.call(c.children,function(k){if(k.tagName==='THEAD')return;k.classList.add('reveal');k.style.setProperty('--rd',Math.min(n,9)*70+'ms');n++;});});
+        // sect-up slides in non-stacking sections; stacking panels (.spanel) and the pinned index handle their own motion
+        document.querySelectorAll('section:not(.hero):not(.spanel):not(.index-scrub)').forEach(function(sec){sec.classList.add('sect-up');
             var inner=sec.querySelector('.section-inner');if(!inner)return;var d=0;
             [].forEach.call(inner.children,function(k){if(k.matches&&(k.matches(STAG)||k.classList.contains('cards')))return;k.classList.add('reveal');k.style.setProperty('--rd',d+'ms');d+=110;});});
-        // observe sections; plus any reveal/count not inside a slid section
-        document.querySelectorAll('.sect-up').forEach(watch);
-        document.querySelectorAll('.reveal,[data-count],.cards').forEach(function(el){if(!el.closest('.sect-up'))watch(el);});
+        // observe sect-up + stacking panels (reveal their children); skip the pinned index (its own script drives it)
+        document.querySelectorAll('.sect-up,.spanel').forEach(watch);
+        document.querySelectorAll('.reveal,[data-count],.cards').forEach(function(el){if(!el.closest('.sect-up')&&!el.closest('.spanel')&&!el.closest('.index-scrub'))watch(el);});
         // starfield helper (pages add <canvas data-stars>)
         window.r2sStarfield=function(c){var x=c.getContext('2d');function size(){c.width=c.offsetWidth||c.parentElement.offsetWidth;c.height=c.offsetHeight||c.parentElement.offsetHeight;}size();
             var s=[];for(var i=0;i<200;i++)s.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.2,a:Math.random()});
